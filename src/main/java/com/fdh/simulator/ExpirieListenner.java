@@ -21,12 +21,10 @@ public class ExpirieListenner implements ExpirationListener<String, Channel> {
     @Override
     public void expired(String channelId, Channel channel) {
 
-        //过期时间到所有的map
+        //过期时间到所有的entry
         try {
             ChannelFuture channelFuture = channel.close();
-            if (channelFuture.isSuccess()) {
-                logger.info("[channel]" + "[" + channel.id() + "]" + "[已经断开]");
-            }
+            logger.info("[channel]" + "[" + channel.id() + "]" + "[已经断开]");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
 

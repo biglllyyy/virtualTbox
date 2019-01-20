@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.fdh.simulator.task.ConnectTask;
 import io.netty.channel.ChannelFuture;
+import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
@@ -34,7 +35,15 @@ public class NettyChannelManager {
     /**
      * 过期时间，单位秒
      */
-    public static int expireTime = 6000;
+    public static int expireTime = 30;
+
+    public static int getExpireTime() {
+        return expireTime;
+    }
+
+    public static void setExpireTime(int expireTime) {
+        NettyChannelManager.expireTime = expireTime;
+    }
 
     public static ExpiringMap<String, Channel> expiringMap = ExpiringMap.builder()
             .expiration(expireTime,TimeUnit.SECONDS)
@@ -67,17 +76,17 @@ public class NettyChannelManager {
      * @param channel
      */
     public static void putChannel(Channel channel) {
-        expiringMap.putIfAbsent(channel.id().asLongText(), channel);
-//        logger.info("[当前连接数]->" + "[" + expiringMap.size() + "]");
+        expiringMap.put(channel.id().asLongText(), channel);
     }
 
     public static void removeChannel(Channel channel) {
-
         expiringMap.remove(channel.id().asLongText());
-        logger.info("[channel]"+"["+channel.id()+"]"+"[已经断开]");
-
     }
 
+
+    public  static  void setExpireTime(){
+        expiringMap.setExpiration(expireTime,TimeUnit.SECONDS);
+    }
     public static long getActiveChannelSize() {
         return expiringMap.size();
     }

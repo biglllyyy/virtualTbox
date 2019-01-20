@@ -2,8 +2,8 @@ package com.fdh.simulator.task;
 
 import com.fdh.simulator.NettyChannelManager;
 import com.fdh.simulator.ui.Simulator;
-import com.fdh.simulator.packet.VechilePacket;
 import com.fdh.simulator.utils.ByteUtils;
+import com.fdh.simulator.utils.VechileUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import net.jodah.expiringmap.ExpiringMap;
@@ -22,20 +22,18 @@ public class ScheduleTask extends TimerTask {
     private static final Logger logger = LoggerFactory.getLogger(ScheduleTask.class);
     @Override
     public void run() {
-        Map<String, String> vinMap = Simulator.vinMap;
+
         ExpiringMap<String, Channel> expiringMap = NettyChannelManager.expiringMap;
         if (expiringMap.size() > 0) {
             Set<Map.Entry<String, Channel>> entries = expiringMap.entrySet();
             int i = 0;
             for (Map.Entry<String, Channel> entry : entries) {
                 Channel channel = entry.getValue();
-                String vin = vinMap.get(i);
-                i++;
-                byte[] realTimePacket = VechilePacket.getRealTimePacket(vin);
+                byte[] realTimePacket = VechileUtils.getRealTimePacket(channel);
                 ChannelFuture channelFuture = channel.writeAndFlush(realTimePacket);
                 if (channelFuture.isSuccess()) {
                     String toHexString = ByteUtils.bytesToHexString(realTimePacket);
-                    logger.info("[SEND]->" + toHexString);
+                    logger.info("[SEND][success]->" + toHexString);
                 }
             }
         }
