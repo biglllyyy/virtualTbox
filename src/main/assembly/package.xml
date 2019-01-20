@@ -1,0 +1,24 @@
+<assembly xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/assembly-1.0.0.xsd">
+    <id>package</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <!-- 压缩包下是否生成和项目名相同的根目录 -->
+    <includeBaseDirectory>true</includeBaseDirectory>
+    
+   <!--  <fileSets>
+        <fileSet>
+          将src/main/config目录下的文件打包到config目录下
+            <directory>src/main/config</directory>
+            <outputDirectory>config</outputDirectory>
+        </fileSet>
+    </fileSets> -->
+    <dependencySets>
+        <dependencySet>
+       <!--  打包运行时依赖的jar包 -->
+            <outputDirectory>lib</outputDirectory>
+            <scope>runtime</scope>
+        </dependencySet>
+    </dependencySets>
+</assembly>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+				        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd  
+				        http://www.springframework.org/schema/context 
+				        http://www.springframework.org/schema/context/spring-context-4.0.xsd"
+       default-autowire="byName" default-lazy-init="false">
+    <!-- 加载配置文件 -->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:config.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <context:component-scan base-package="com.fdh.simulator"/>
+    <!-- 线程池配置 -->
+    <bean id="taskExecutor"
+          class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <!-- 核心线程数 -->
+        <property name="corePoolSize" value="50"/>
+        <!-- 最大线程数 -->
+        <property name="maxPoolSize" value="500"/>
+        <!-- 队列最大长度 -->
+        <property name="queueCapacity" value="3000"/>
+        <!-- 线程池维护线程所允许的空闲时间 -->
+        <property name="keepAliveSeconds" value="300"/>
+        <!-- 处理程序遭到拒绝将抛出运行时 RejectedExecutionException的处理策略 -->
+        <property name="rejectedExecutionHandler">
+            <bean class="java.util.concurrent.ThreadPoolExecutor$AbortPolicy"/>
+        </property>
+    </bean>
+    <!-- SpringContextUtils定义 -->
+    <bean id="springContextUtils" class="com.fdh.simulator.utils.SpringContextUtils" lazy-init="false"/>
+    <bean id="simulator" class="com.fdh.simulator.ui.Simulator" lazy-init="false"/>
+    <!--<bean id="controlPanel" class="com.fdh.simulator.ui.ControlPanel" lazy-init="false"/>-->
+</beans>
