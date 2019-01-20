@@ -1,6 +1,7 @@
 package com.fdh.simulator.task;
 
 import com.fdh.simulator.NettyChannelManager;
+import com.fdh.simulator.PacketAnalyze;
 import com.fdh.simulator.ui.Simulator;
 import com.fdh.simulator.utils.ByteUtils;
 import com.fdh.simulator.utils.VechileUtils;
@@ -29,11 +30,13 @@ public class ScheduleTask extends TimerTask {
             Set<Map.Entry<String, Channel>> entries = expiringMap.entrySet();
             int i = 0;
             for (Map.Entry<String, Channel> entry : entries) {
-                Channel channel = entry.getValue();
-                byte[] realTimePacket = VechileUtils.getRealTimePacket(channel);
-                channel.writeAndFlush(realTimePacket);
-                String toHexString = ByteUtils.bytesToHexString(realTimePacket);
-                logger.info("[CHANNEL]" + "[" + channel.id().asShortText() + "][SENDED]->" + toHexString);
+//                Channel channel = entry.getValue();
+                int packetSerialNum = PacketAnalyze.getPacketSerialNum();
+                PacketAnalyze.sendPacketMap.put(packetSerialNum,System.currentTimeMillis());
+//                byte[] realTimePacket = VechileUtils.getRealTimePacket(channel, packetSerialNum);
+//                channel.writeAndFlush(realTimePacket);
+//                String toHexString = ByteUtils.bytesToHexString(realTimePacket);
+//                logger.info("[CHANNEL]" + "[" + channel.id().asShortText() + "][SENDED]->" + toHexString);
             }
         }
         try {

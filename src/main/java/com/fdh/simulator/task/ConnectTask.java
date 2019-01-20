@@ -2,7 +2,7 @@ package com.fdh.simulator.task;
 
 import com.fdh.simulator.codec.StreamByteDecoder;
 import com.fdh.simulator.codec.StreamByteEncoder;
-import com.fdh.simulator.handler.simulatorHandler;
+import com.fdh.simulator.handler.SimulatorHandler;
 import com.fdh.simulator.NettyChannelManager;
 import com.fdh.simulator.ui.Simulator;
 import com.fdh.simulator.utils.VechileUtils;
@@ -54,7 +54,7 @@ public class ConnectTask implements Runnable {
             protected void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline().addLast(new StreamByteEncoder());//解码
                 ch.pipeline().addLast(new StreamByteDecoder());//解码
-                ch.pipeline().addLast(new simulatorHandler());
+                ch.pipeline().addLast(new SimulatorHandler());
             }
         });
         // 异步等待连接成功
