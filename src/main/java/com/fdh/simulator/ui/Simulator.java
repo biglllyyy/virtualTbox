@@ -13,7 +13,6 @@ import com.fdh.simulator.NettyChannelManager;
 import com.fdh.simulator.task.ScheduleTask;
 import com.fdh.simulator.utils.PropertiesUtils;
 import com.fdh.simulator.utils.SpringContextUtils;
-import com.fdh.simulator.utils.Utils;
 import com.fdh.simulator.task.ConnectTask;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -69,6 +68,7 @@ public class Simulator {
             logger.error("TCP连接数不能大于10000！");
             return false;
         }
+        NettyChannelManager.test(testAvailableTime);
         return true;
     }
 
@@ -77,14 +77,13 @@ public class Simulator {
 //    }
 
     public void connect(String inetHost, int inetPort) {
+        //设置测试结束时间
         EventLoopGroup workgroup = new NioEventLoopGroup(1);
         BlockingQueue<Runnable> threads = new LinkedBlockingQueue<>();
         for (int i = 1; i <= tcpConnections; i++) {
             taskExecutor.submit(new ConnectTask(inetHost, inetPort, i, workgroup));
         }
         new Timer().schedule(new ScheduleTask(), 0,sendInterval);
-        //设置测试结束时间
-        NettyChannelManager.setExpireTime(testAvailableTime);
     }
 
     public void close() {

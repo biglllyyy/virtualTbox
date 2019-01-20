@@ -41,14 +41,24 @@ public class NettyChannelManager {
         return expireTime;
     }
 
+    public static ExpiringMap<String, Channel> expiringMap;
+
+    /***
+     * 此方法只有在变量过期的时候才能调用，否则报错
+     * @param expireTime
+     */
     public static void setExpireTime(int expireTime) {
-        NettyChannelManager.expireTime = expireTime;
+        expiringMap.setExpiration(expireTime, TimeUnit.MINUTES);
     }
 
-    public static ExpiringMap<String, Channel> expiringMap = ExpiringMap.builder()
-            .expiration(expireTime,TimeUnit.SECONDS)
-            .expirationListener(new ExpirieListenner())
-            .build();
+    public static void test(int expireTime) {
+        expiringMap = ExpiringMap.builder()
+                .expiration(expireTime, TimeUnit.MINUTES)
+                .expirationListener(new ExpirieListenner())
+                .build();
+    }
+
+
     /**
      * 端口所有的链接
      *
@@ -63,7 +73,7 @@ public class NettyChannelManager {
             if (channel.isOpen()) {
                 ChannelFuture channelFuture = channel.close();
                 if (channelFuture.isSuccess()) {
-                    logger.info("[channel]"+"["+channel.id()+"]"+"[已经断开]");
+                    logger.info("[channel]" + "[" + channel.id() + "]" + "[已经断开]");
                 }
             }
 
@@ -84,9 +94,10 @@ public class NettyChannelManager {
     }
 
 
-    public  static  void setExpireTime(){
-        expiringMap.setExpiration(expireTime,TimeUnit.SECONDS);
+    public static void setExpireTime() {
+        expiringMap.setExpiration(expireTime, TimeUnit.SECONDS);
     }
+
     public static long getActiveChannelSize() {
         return expiringMap.size();
     }

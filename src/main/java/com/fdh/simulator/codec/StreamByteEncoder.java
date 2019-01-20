@@ -13,6 +13,7 @@ package com.fdh.simulator.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import io.netty.util.ReferenceCountUtil;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -38,6 +39,8 @@ public class StreamByteEncoder extends MessageToByteEncoder<byte[]> {
 			bytebuf.writeBytes(obj);
 		}catch (Exception e) {
 			logger.error(e.getMessage(),e);
+		}finally {
+//			ReferenceCountUtil.release(bytebuf);
 		}
 	}
 

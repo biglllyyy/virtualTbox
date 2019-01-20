@@ -20,6 +20,7 @@ import java.util.TimerTask;
 public class ScheduleTask extends TimerTask {
 
     private static final Logger logger = LoggerFactory.getLogger(ScheduleTask.class);
+
     @Override
     public void run() {
 
@@ -30,11 +31,9 @@ public class ScheduleTask extends TimerTask {
             for (Map.Entry<String, Channel> entry : entries) {
                 Channel channel = entry.getValue();
                 byte[] realTimePacket = VechileUtils.getRealTimePacket(channel);
-                ChannelFuture channelFuture = channel.writeAndFlush(realTimePacket);
-                if (channelFuture.isSuccess()) {
-                    String toHexString = ByteUtils.bytesToHexString(realTimePacket);
-                    logger.info("[SEND][success]->" + toHexString);
-                }
+                channel.writeAndFlush(realTimePacket);
+                String toHexString = ByteUtils.bytesToHexString(realTimePacket);
+                logger.info("[CHANNEL]" + "[" + channel.id().asShortText() + "][SENDED]->" + toHexString);
             }
         }
         try {

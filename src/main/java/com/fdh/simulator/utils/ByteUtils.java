@@ -36,7 +36,7 @@ public class ByteUtils {
             if (hv.length() < 2) {
                 stringBuilder.append(0);
             }
-            stringBuilder.append(hv).append(" ");
+            stringBuilder.append(hv);
         }
         return stringBuilder.toString().toUpperCase();
     }
