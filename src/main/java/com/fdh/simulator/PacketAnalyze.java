@@ -16,7 +16,7 @@ public class PacketAnalyze {
      * key packetserialNum
      * value send packet timestamp
      */
-    public static ConcurrentHashMap<Integer, Integer> sendPacketMap = new ConcurrentHashMap<Integer, Integer>();
+    public static ConcurrentHashMap<Integer, Long> sendPacketMap = new ConcurrentHashMap<Integer, Long>();
 
     /***
      * key packetserialNum

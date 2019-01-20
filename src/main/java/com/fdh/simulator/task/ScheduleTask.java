@@ -29,7 +29,7 @@ public class ScheduleTask extends TimerTask {
             for (Map.Entry<String, Channel> entry : entries) {
                 Channel channel = entry.getValue();
                 int packetSerialNum = PacketAnalyze.getPacketSerialNum();
-                PacketAnalyze.sendPacketMap.put(packetSerialNum,(int)System.currentTimeMillis());
+                PacketAnalyze.sendPacketMap.put(packetSerialNum,System.currentTimeMillis());
                 byte[] realTimePacket = VechileUtils.getRealTimePacket(channel, packetSerialNum);
                 channel.writeAndFlush(realTimePacket);
                 String toHexString = ByteUtils.bytesToHexString(realTimePacket);
