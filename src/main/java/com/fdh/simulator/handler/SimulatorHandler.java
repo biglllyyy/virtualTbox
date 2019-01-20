@@ -24,12 +24,13 @@ public class SimulatorHandler extends ChannelInboundHandlerAdapter {
         //解析报文获得报文序列号，计算响应时间
         int packetSerail = ByteUtils.getInt(bytes, 24);
         long receiveTimeMillis = System.currentTimeMillis();
-        Long sendTimeMillis = PacketAnalyze.sendPacketMap.get(packetSerail);
+        Integer receiveTimeMillis1 = (int) receiveTimeMillis;
+        Integer sendTimeMillis = PacketAnalyze.sendPacketMap.get(receiveTimeMillis1);
         if(sendTimeMillis!=null){
-            Long diff = receiveTimeMillis-sendTimeMillis;
+            Integer diff = receiveTimeMillis1-sendTimeMillis;
             PacketAnalyze.packetMap.put(packetSerail,diff);
             //防止长期占用内存过大，及时销毁
-            PacketAnalyze.sendPacketMap.remove(packetSerail);
+//            PacketAnalyze.sendPacketMap.remove(packetSerail);
         }
         logger.info(ctx.channel().id()+"   say:"+(String)msg);
 	}
