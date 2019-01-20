@@ -26,6 +26,11 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 public class Simulator {
 
     private ThreadPoolTaskExecutor taskExecutor;
+
+    public static Timer timer;
+
+    public static boolean bisRuning =false;
+
     /**
      * 存储channelId和vin对应关系的map
      */
@@ -39,9 +44,9 @@ public class Simulator {
     public Simulator() {
         taskExecutor = SpringContextUtils.getBean("taskExecutor");
         boolean config = initConfig();
-        if(config){
-            connect(address,port);
-        }else {
+        if (config) {
+            connect(address, port);
+        } else {
             logger.error("初始化参数失败");
         }
     }
@@ -64,7 +69,7 @@ public class Simulator {
         sendInterval = PropertiesUtils.getIntegerProperty("send_interval");
         testAvailableTime = PropertiesUtils.getIntegerProperty("test_available_time");
         tcpConnections = PropertiesUtils.getIntegerProperty("tcp_connections");
-        if(tcpConnections > 10000){
+        if (tcpConnections > 10000) {
             logger.error("TCP连接数不能大于10000！");
             return false;
         }
@@ -83,7 +88,9 @@ public class Simulator {
         for (int i = 1; i <= tcpConnections; i++) {
             taskExecutor.submit(new ConnectTask(inetHost, inetPort, i, workgroup));
         }
-        new Timer().schedule(new ScheduleTask(), 0,sendInterval);
+        timer = new Timer();
+        timer.schedule(new ScheduleTask(), 0, sendInterval);
+        bisRuning = false;
     }
 
     public void close() {

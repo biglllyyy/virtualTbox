@@ -1,5 +1,6 @@
 package com.fdh.simulator;
 
+import com.fdh.simulator.ui.Simulator;
 import com.fdh.simulator.utils.ReportUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -24,10 +25,14 @@ public class ExpirieListenner implements ExpirationListener<String, Channel> {
 
         //过期时间到所有的entry
         try {
-            ChannelFuture channelFuture = channel.close();
+            //取消sing是任务
+            if (Simulator.bisRuning) {
+                Simulator.timer.cancel();
+            }
+            channel.close();
             logger.info("[channel]" + "[" + channel.id() + "]" + "[已经断开]");
             long activeChannelSize = NettyChannelManager.getActiveChannelSize();
-            if(activeChannelSize == 0){
+            if (activeChannelSize == 0) {
                 logger.info("测试完成");
                 ReportUtils.report();
             }

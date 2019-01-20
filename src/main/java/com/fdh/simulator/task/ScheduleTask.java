@@ -28,12 +28,14 @@ public class ScheduleTask extends TimerTask {
             Set<Map.Entry<String, Channel>> entries = expiringMap.entrySet();
             for (Map.Entry<String, Channel> entry : entries) {
                 Channel channel = entry.getValue();
-                int packetSerialNum = PacketAnalyze.getPacketSerialNum();
-                PacketAnalyze.sendPacketMap.put(packetSerialNum,System.currentTimeMillis());
-                byte[] realTimePacket = VechileUtils.getRealTimePacket(channel, packetSerialNum);
-                channel.writeAndFlush(realTimePacket);
-                String toHexString = ByteUtils.bytesToHexString(realTimePacket);
-                logger.info("[CHANNEL]" + "[" + channel.id().asShortText() + "][SENDED]->" + toHexString);
+                if(channel.isOpen() && channel.isActive()){
+                    int packetSerialNum = PacketAnalyze.getPacketSerialNum();
+                    PacketAnalyze.sendPacketMap.put(packetSerialNum,System.currentTimeMillis());
+                    byte[] realTimePacket = VechileUtils.getRealTimePacket(channel, packetSerialNum);
+                    channel.writeAndFlush(realTimePacket);
+                    String toHexString = ByteUtils.bytesToHexString(realTimePacket);
+                    logger.info("[CHANNEL]" + "[" + channel.id().asShortText() + "][SENDED]->" + toHexString);
+                }
             }
         }
         try {
