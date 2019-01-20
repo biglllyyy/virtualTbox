@@ -1,4 +1,5 @@
 package com.fdh.simulator.utils;
+
 import com.fdh.simulator.PacketAnalyze;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class ReportUtils {
@@ -35,20 +38,24 @@ public class ReportUtils {
         //创建FileOutInputStream的对象
         FileOutputStream fos = null;
         try {
-
             String tile = "|发送总报文数|\t\t|接收总报文数|\t\t|丢失率|\t\t|最小响应时间(ms)|\t\t|最大响应时间(ms)|\t\t|平均响应时间(ms)|\n";
             double sendCount = PacketAnalyze.atomicLong.get();//总发送量
             double receiveCount = PacketAnalyze.packetMap.size();//总接收送量
-            double lostPercent = (sendCount - receiveCount) / sendCount;
-            List<Integer> receviceList = (List<Integer>) PacketAnalyze.packetMap.values();
+            double lostPercent = 0;
+            if (sendCount != 0) {
+                lostPercent = (sendCount - receiveCount) * 100 / sendCount;
+            }
+            Collection<Integer> values = PacketAnalyze.packetMap.values();
+
+            List<Integer> receviceList = new ArrayList<Integer>(values);
             String max = PacketAnalyze.max(receviceList);
             String min = PacketAnalyze.min(receviceList);
             String average = PacketAnalyze.average(receviceList);
             String blank = "\t\t\t\t\t";
             StringBuffer sbf = new StringBuffer("");
-            sbf.append(sendCount)//总发送
+            sbf.append((int) sendCount)//总发送
                     .append(blank)
-                    .append(receiveCount)//总接收
+                    .append((int) receiveCount)//总接收
                     .append(blank)
                     .append(String.format("%.2f", lostPercent))//丢包率
                     .append(blank)
@@ -65,7 +72,9 @@ public class ReportUtils {
             logger.error(e.getMessage(), e);
         } finally {
             try {
-                fos.close();
+                if (fos != null) {
+                    fos.close();
+                }
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
             }

@@ -60,8 +60,11 @@ public class PacketAnalyze {
      *
      * @return
      */
-    public static String average(List<Integer> longs) {
-        OptionalDouble average = longs.stream().mapToInt(Integer::intValue).average();
+    public static String average(List<Integer> list) {
+        if (list == null || list.size() == 0) {
+            return 0 + "";
+        }
+        OptionalDouble average = list.stream().mapToInt(Integer::intValue).average();
         return String.format("%.2f", average.getAsDouble());//保留两位小数
     }
 
@@ -71,31 +74,38 @@ public class PacketAnalyze {
      * @return
      */
     public static String max(List<Integer> list) {
+        if (list == null || list.size() == 0) {
+            return 0 + "";
+        }
         OptionalInt OptionalMax = list.stream().mapToInt(Integer::intValue).max();
         Integer max = OptionalMax.getAsInt();
         return max + "";
     }
+
     /***
      * 计算最小响应时间
      * @param list
      * @return
      */
     public static String min(List<Integer> list) {
+        if (list == null || list.size() == 0) {
+            return 0 + "";
+        }
         OptionalInt OptionalMin = list.stream().mapToInt(Integer::intValue).min();
         Integer min = OptionalMin.getAsInt();
         return min + "";
     }
+
     /***
      * 计算丢包率
      * @param
      * @return
      */
-    public static String getSupplementary (List<Integer> sends,List<Integer> receivces) {
+    public static String getSupplementary(List<Integer> sends, List<Integer> receivces) {
         boolean suppleList = sends.remove(receivces);
-        return sends.size()+"";
+        return sends.size() + "";
 
     }
-
 
 
     public static void main(String[] args) {

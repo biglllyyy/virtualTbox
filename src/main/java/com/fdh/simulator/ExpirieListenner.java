@@ -1,5 +1,6 @@
 package com.fdh.simulator;
 
+import com.fdh.simulator.utils.ReportUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import net.jodah.expiringmap.ExpirationListener;
@@ -25,6 +26,11 @@ public class ExpirieListenner implements ExpirationListener<String, Channel> {
         try {
             ChannelFuture channelFuture = channel.close();
             logger.info("[channel]" + "[" + channel.id() + "]" + "[已经断开]");
+            long activeChannelSize = NettyChannelManager.getActiveChannelSize();
+            if(activeChannelSize == 0){
+                logger.info("测试完成");
+                ReportUtils.report();
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
 

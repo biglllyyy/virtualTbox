@@ -30,7 +30,7 @@ public class SimulatorHandler extends ChannelInboundHandlerAdapter {
             Integer diff = receiveTimeMillis1-sendTimeMillis;
             PacketAnalyze.packetMap.put(packetSerail,diff);
             //防止长期占用内存过大，及时销毁
-//            PacketAnalyze.sendPacketMap.remove(packetSerail);
+            PacketAnalyze.sendPacketMap.remove(packetSerail);
         }
         logger.info(ctx.channel().id()+"   say:"+(String)msg);
 	}

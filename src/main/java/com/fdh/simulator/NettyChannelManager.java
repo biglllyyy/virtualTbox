@@ -53,7 +53,7 @@ public class NettyChannelManager {
 
     public static void test(int expireTime) {
         expiringMap = ExpiringMap.builder()
-                .expiration(expireTime, TimeUnit.MINUTES)
+                .expiration(expireTime, TimeUnit.SECONDS)
                 .expirationListener(new ExpirieListenner())
                 .build();
     }

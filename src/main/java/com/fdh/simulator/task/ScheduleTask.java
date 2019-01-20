@@ -2,6 +2,8 @@ package com.fdh.simulator.task;
 
 import com.fdh.simulator.NettyChannelManager;
 import com.fdh.simulator.PacketAnalyze;
+import com.fdh.simulator.utils.ByteUtils;
+import com.fdh.simulator.utils.VechileUtils;
 import io.netty.channel.Channel;
 import net.jodah.expiringmap.ExpiringMap;
 import org.slf4j.Logger;
@@ -24,15 +26,14 @@ public class ScheduleTask extends TimerTask {
         ExpiringMap<String, Channel> expiringMap = NettyChannelManager.expiringMap;
         if (expiringMap.size() > 0) {
             Set<Map.Entry<String, Channel>> entries = expiringMap.entrySet();
-            int i = 0;
             for (Map.Entry<String, Channel> entry : entries) {
-//                Channel channel = entry.getValue();
+                Channel channel = entry.getValue();
                 int packetSerialNum = PacketAnalyze.getPacketSerialNum();
                 PacketAnalyze.sendPacketMap.put(packetSerialNum,(int)System.currentTimeMillis());
-//                byte[] realTimePacket = VechileUtils.getRealTimePacket(channel, packetSerialNum);
-//                channel.writeAndFlush(realTimePacket);
-//                String toHexString = ByteUtils.bytesToHexString(realTimePacket);
-//                logger.info("[CHANNEL]" + "[" + channel.id().asShortText() + "][SENDED]->" + toHexString);
+                byte[] realTimePacket = VechileUtils.getRealTimePacket(channel, packetSerialNum);
+                channel.writeAndFlush(realTimePacket);
+                String toHexString = ByteUtils.bytesToHexString(realTimePacket);
+                logger.info("[CHANNEL]" + "[" + channel.id().asShortText() + "][SENDED]->" + toHexString);
             }
         }
         try {
