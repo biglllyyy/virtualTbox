@@ -4,6 +4,7 @@ import com.fdh.simulator.NettyChannelManager;
 import com.fdh.simulator.PacketAnalyze;
 import com.fdh.simulator.Simulator;
 import com.fdh.simulator.utils.ByteUtils;
+import com.fdh.simulator.utils.ReportUtils;
 import com.fdh.simulator.utils.VechileUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -34,6 +35,12 @@ public class SimulatorHandler extends ChannelInboundHandlerAdapter {
             PacketAnalyze.sendPacketMap.remove(packetSerail);
         }
         logger.info("[CHANNEL]" + "[" + ctx.channel().id().asShortText() + "][RECE][NO."+packetSerail+"]->" + ByteUtils.bytesToHexString(bytes));
+        long activeChannelSize = NettyChannelManager.getActiveChannelSize();
+        if(activeChannelSize == PacketAnalyze.atomicLong.get()){
+            logger.info("**********************测试时间到**********************");
+            Simulator.timer.cancel();
+            ReportUtils.report();
+        }
 	}
 
 	@Override

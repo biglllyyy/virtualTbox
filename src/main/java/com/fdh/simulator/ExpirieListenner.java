@@ -30,17 +30,32 @@ public class ExpirieListenner implements ExpirationListener<String, Channel> {
 //                ReportUtils.report();
 //                Simulator.bisRuning = false;
 //            }
-            logger.info("[channel]" + "[" + channel.id() + "]" + "[已经断开]");
-            long activeChannelSize = NettyChannelManager.getActiveChannelSize();
-            if(activeChannelSize <=0){
-                Simulator.timer.cancel();
-                ReportUtils.report();
-            }
+            NettyChannelManager.removeChannel(channel);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
 
         } finally {
-            NettyChannelManager.removeChannel(channel);
+//            long activeChannelSize = NettyChannelManager.getActiveChannelSize();
+//            if (activeChannelSize <= 0) {
+//                if (PacketAnalyze.packetMap.size() == PacketAnalyze.atomicLong.get()) {
+//
+//                } else {
+//
+//                    //发送报文为收到完全，等待5秒钟
+//                    int count = 10;
+//                    for (int i = 0; i < count; i++) {
+//                        try {
+//                            Thread.sleep(1000);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                    logger.info("**********************测试时间到**********************");
+//                    Simulator.timer.cancel();
+//                    ReportUtils.report();
+//                }
+
+//            }
         }
     }
 }
