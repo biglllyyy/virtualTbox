@@ -4,8 +4,6 @@ import com.fdh.simulator.codec.StreamByteDecoder;
 import com.fdh.simulator.codec.StreamByteEncoder;
 import com.fdh.simulator.handler.SimulatorHandler;
 import com.fdh.simulator.NettyChannelManager;
-import com.fdh.simulator.ui.Simulator;
-import com.fdh.simulator.utils.VechileUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
@@ -66,15 +64,7 @@ public class ConnectTask implements Runnable {
             boolean isconnected = channel.isActive();
             if (isconnected) {
                 //存放vin和channel的关系
-                Simulator.channnelVinMap.put(channel.id().asLongText(), VechileUtils.getVin());
                 NettyChannelManager.putChannel(channel);
-                byte[] realTimePacket = "hello world!".getBytes();
-                ByteBuf buffer = channel.alloc().buffer(realTimePacket.length);
-                buffer.writeBytes(buffer);
-                ChannelFuture channelFuture = channel.writeAndFlush(realTimePacket);
-                if (channelFuture.isSuccess()) {
-                    logger.info("发送成功");
-                }
             } else {
                 logger.info("连接失败!");
             }

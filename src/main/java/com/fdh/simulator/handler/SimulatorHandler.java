@@ -2,8 +2,9 @@ package com.fdh.simulator.handler;
 
 import com.fdh.simulator.NettyChannelManager;
 import com.fdh.simulator.PacketAnalyze;
-import com.fdh.simulator.ui.Simulator;
+import com.fdh.simulator.Simulator;
 import com.fdh.simulator.utils.ByteUtils;
+import com.fdh.simulator.utils.VechileUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -25,14 +26,14 @@ public class SimulatorHandler extends ChannelInboundHandlerAdapter {
         int packetSerail = ByteUtils.getInt(bytes, 24);
         long receiveTimeMillis = System.currentTimeMillis();
         Long receiveTimeMillis1 = receiveTimeMillis;
-        Long sendTimeMillis = PacketAnalyze.sendPacketMap.get(receiveTimeMillis1);
+        Long sendTimeMillis = PacketAnalyze.sendPacketMap.get(packetSerail);
         if(sendTimeMillis!=null){
             Integer diff =(int)(receiveTimeMillis1-sendTimeMillis);
             PacketAnalyze.packetMap.put(packetSerail,diff);
             //防止长期占用内存过大，及时销毁
             PacketAnalyze.sendPacketMap.remove(packetSerail);
         }
-        logger.info(ctx.channel().id()+"   say:"+(String)msg);
+        logger.info("[CHANNEL]" + "[" + ctx.channel().id().asShortText() + "][RECE]->" + ByteUtils.bytesToHexString(bytes));
 	}
 
 	@Override
@@ -44,7 +45,8 @@ public class SimulatorHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
-        NettyChannelManager.putChannel(channel);
+        NettyChannelManager.putChannel(channel);//保存channel
+        Simulator.channnelVinMap.put(channel.id().asLongText(), VechileUtils.getVin());//保存changnel和Vin对应关系
     }
 
     @Override

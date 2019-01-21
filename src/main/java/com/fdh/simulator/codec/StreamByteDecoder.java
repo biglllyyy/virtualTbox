@@ -10,6 +10,7 @@
  */
 package com.fdh.simulator.codec;
 
+import com.fdh.simulator.NettyChannelManager;
 import com.fdh.simulator.utils.ByteArrayUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -94,7 +95,7 @@ public class StreamByteDecoder extends ByteToMessageDecoder {
                 logger.error("[StreamByteDecoder][拆包时出现头两个字节不是##][dataMessage=" + ByteArrayUtil.toHexString(objBytes) + "]");
                 buf.resetReaderIndex();
                 buf.readBytes(1);
-                ctx.channel().close();//接收数据不正确断开连接，防止长时间占用连接
+                NettyChannelManager.removeChannel(ctx.channel());//接收数据不正确断开连接，防止长时间占用连接
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

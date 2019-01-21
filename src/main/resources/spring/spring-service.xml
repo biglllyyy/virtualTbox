@@ -35,6 +35,6 @@
     </bean>
     <!-- SpringContextUtils定义 -->
     <bean id="springContextUtils" class="com.fdh.simulator.utils.SpringContextUtils" lazy-init="false"/>
-    <bean id="simulator" class="com.fdh.simulator.ui.Simulator" lazy-init="false"/>
+    <bean id="simulator" class="com.fdh.simulator.Simulator" lazy-init="false"/>
     <!--<bean id="controlPanel" class="com.fdh.simulator.ui.ControlPanel" lazy-init="false"/>-->
 </beans>

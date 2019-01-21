@@ -42,11 +42,11 @@ public class ByteUtils {
     }
 
     /**
-     *  转换int为byte数组
+     * 转换int为byte数组
      *
      * @param x
      */
-    public static byte[]  getIntegerByte(Integer x) {
+    public static byte[] getIntegerByte(Integer x) {
         byte[] bb = new byte[4];
         bb[0] = (byte) (x >> 24);
         bb[1] = (byte) (x >> 16);
@@ -63,12 +63,13 @@ public class ByteUtils {
      * @return
      */
     public static int getInt(byte[] bb, int index) {
-        return (int) ((((bb[0] & 0xff) << 24)
-                | ((bb[1] & 0xff) << 16)
-                | ((bb[2] & 0xff) << 8) | ((bb[3] & 0xff) << 0)));
+        return (int) ((((bb[index + 0] & 0xff) << 24)
+                | ((bb[index + 1] & 0xff) << 16)
+                | ((bb[index + 2] & 0xff) << 8) | ((bb[index + 3] & 0xff) << 0)));
     }
 
 //    public static void main(String[] args) {
+//    232307FE 4C4E42534342334658595A313030303031 01 0004 00 00 00 02 C2
 //        int anInt = getInt(new byte[]{0x07, 0x5B, (byte) 0xCD, 0x15},0);
 //        System.out.println(anInt);
 //    }
@@ -76,8 +77,8 @@ public class ByteUtils {
 
 //    public  static  int parseSerialNum(byte[] packet){
 //
-//        return  = getInt(packet, 10);
-//
+
+
 //    }
 
     /**
@@ -85,7 +86,7 @@ public class ByteUtils {
      *
      * @param x
      */
-    public static byte[]  putLong(long x) {
+    public static byte[] putLong(long x) {
         byte[] bb = new byte[8];
         bb[0] = (byte) (x >> 56);
         bb[1] = (byte) (x >> 48);
@@ -113,5 +114,12 @@ public class ByteUtils {
                 | (((long) bb[4] & 0xff) << 24)
                 | (((long) bb[5] & 0xff) << 16)
                 | (((long) bb[6] & 0xff) << 8) | (((long) bb[7] & 0xff) << 0));
+    }
+
+    public static void main(String[] args) {
+        byte[] aa = {0x23, 0x23, 0x07, (byte) 0xFE, 0x4C, 0x4E, 0x42, 0x53, 0x43, 0x42, 0x33, 0x46, 0x58, 0x59, 0x5A, 0x31, 0x30, 0x30, 0x30, 0x30, 0x31, 0x01, 0x00, 0x04, 0x00, 0x00, 0x00, 0x02, (byte) 0xC2};
+        int bb = getInt(aa, 24);
+        System.out.println(bb);
+
     }
 }

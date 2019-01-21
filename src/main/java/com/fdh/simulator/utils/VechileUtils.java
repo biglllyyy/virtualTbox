@@ -1,7 +1,6 @@
 package com.fdh.simulator.utils;
 
-import com.fdh.simulator.NettyChannelManager;
-import com.fdh.simulator.ui.Simulator;
+import com.fdh.simulator.Simulator;
 import io.netty.channel.Channel;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,9 +13,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class VechileUtils {
 
-    public static byte[] comand = {0x08, (byte) 0xFE};
+    public static byte[] comand = {0x07, (byte) 0xFE};
 
-    public static String prefix = "LNBSCB3FXJW";
+    public static String prefix = "LNBSCB3FXYZ";
 
     public static AtomicInteger suffix = new AtomicInteger(100000);
 //    public static byte[] getRealTimePacket(Channel channel, int packetSerialNum) {

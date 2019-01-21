@@ -38,7 +38,7 @@ public class ReportUtils {
         //创建FileOutInputStream的对象
         FileOutputStream fos = null;
         try {
-            String tile = "|发送总报文数|\t\t|接收总报文数|\t\t|丢失率|\t\t|最小响应时间(ms)|\t\t|最大响应时间(ms)|\t\t|平均响应时间(ms)|\n";
+            String tile = "|发送总报文数|\t\t|接收总报文数|\t\t|丢失率|\t\t|最大响应时间(ms)|\t\t|最小响应时间(ms)|\t\t|平均响应时间(ms)|\n";
             double sendCount = PacketAnalyze.atomicLong.get();//总发送量
             double receiveCount = PacketAnalyze.packetMap.size();//总接收送量
             double lostPercent = 0;

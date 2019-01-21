@@ -2,7 +2,7 @@ package com.fdh.simulator.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import com.fdh.simulator.ui.Simulator;
+import com.fdh.simulator.Simulator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

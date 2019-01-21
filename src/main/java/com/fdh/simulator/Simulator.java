@@ -1,15 +1,12 @@
-package com.fdh.simulator.ui;
+package com.fdh.simulator;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Timer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.fdh.simulator.NettyChannelManager;
 import com.fdh.simulator.task.ScheduleTask;
 import com.fdh.simulator.utils.PropertiesUtils;
 import com.fdh.simulator.utils.SpringContextUtils;
@@ -90,7 +87,7 @@ public class Simulator {
         }
         timer = new Timer();
         timer.schedule(new ScheduleTask(), 0, sendInterval);
-        bisRuning = false;
+        bisRuning = true;
     }
 
     public void close() {
