@@ -10,12 +10,10 @@
  */
 package com.fdh.simulator;
 
-import java.util.Map.Entry;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import com.fdh.simulator.task.ConnectTask;
-import io.netty.channel.ChannelFuture;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
 import io.netty.channel.Channel;
@@ -41,7 +39,14 @@ public class NettyChannelManager {
         return expireTime;
     }
 
+    /**
+     * 此过期map官方宣称线程安全，就是垃圾，不能一边put.remove ,一边迭代
+     */
     public static ExpiringMap<String, Channel> expiringMap;
+
+    public static ConcurrentHashMap<String, Channel> concurrentHashMap = new ConcurrentHashMap<String, Channel>();
+
+
 
     /***
      * 此方法只有在变量过期的时候才能调用，否则报错
@@ -71,21 +76,21 @@ public class NettyChannelManager {
      *
      * @param
      */
-    public static void removeAllChannel() {
-
-        Set<Entry<String, Channel>> entries = expiringMap.entrySet();
-        for (Entry<String, Channel> entry : entries) {
-            Channel channel = entry.getValue();
-            String channelId = entry.getKey();
-            if (channel.isOpen()) {
-                ChannelFuture channelFuture = channel.close();
-                if (channelFuture.isSuccess()) {
-                    logger.info("[channel]" + "[" + channel.id() + "]" + "[已经断开]");
-                }
-            }
-
-        }
-    }
+//    public static void removeAllChannel() {
+//
+//        Set<Entry<String, Channel>> entries = expiringMap.entrySet();
+//        for (Entry<String, Channel> entry : entries) {
+//            Channel channel = entry.getValue();
+//            String channelId = entry.getKey();
+//            if (channel.isOpen()) {
+//                ChannelFuture channelFuture = channel.close();
+//                if (channelFuture.isSuccess()) {
+//                    logger.info("[channel]" + "[" + channel.id() + "]" + "[已经断开]");
+//                }
+//            }
+//
+//        }
+//    }
 
     /**
      * 添加通道
@@ -94,10 +99,12 @@ public class NettyChannelManager {
      */
     public static void putChannel(Channel channel) {
         expiringMap.put(channel.id().asLongText(), channel, ExpirationPolicy.CREATED, expireTime, TimeUnit.SECONDS);
+        concurrentHashMap.put(channel.id().asLongText(), channel);
     }
 
     public static void removeChannel(Channel channel) {
         expiringMap.remove(channel.id().asLongText());
+        concurrentHashMap.remove(channel.id().asLongText());
     }
 
 

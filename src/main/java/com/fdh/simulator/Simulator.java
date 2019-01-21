@@ -91,10 +91,10 @@ public class Simulator {
         bisRuning = true;
     }
 
-    public void close() {
-        //所有的客户端连接全部断开
-        NettyChannelManager.removeAllChannel();
-    }
+//    public void close() {
+//        //所有的客户端连接全部断开
+//        NettyChannelManager.removeAllChannel();
+//    }
 
     public void addPropertyChangerListsener(PropertyChangeListener listener) {
         listeners.addPropertyChangeListener(listener);

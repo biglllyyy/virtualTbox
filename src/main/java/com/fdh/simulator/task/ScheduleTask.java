@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
 /***
  * 定时任务
@@ -24,9 +25,9 @@ public class ScheduleTask extends TimerTask {
     public void run() {
 
         try {
-            ExpiringMap<String, Channel> expiringMap = NettyChannelManager.expiringMap;
-            if (expiringMap.size() > 0) {
-                Set<Map.Entry<String, Channel>> entries = expiringMap.entrySet();
+            ConcurrentHashMap<String, Channel> concurrentHashMap = NettyChannelManager.concurrentHashMap;
+            if (concurrentHashMap.size() > 0) {
+                Set<Map.Entry<String, Channel>> entries = concurrentHashMap.entrySet();
                 for (Map.Entry<String, Channel> entry : entries) {
                     Channel channel = entry.getValue();
                     if(channel.isOpen() && channel.isActive()){
