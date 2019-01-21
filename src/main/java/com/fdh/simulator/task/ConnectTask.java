@@ -64,7 +64,7 @@ public class ConnectTask implements Runnable {
             boolean isconnected = channel.isActive();
             if (isconnected) {
                 //存放vin和channel的关系
-                NettyChannelManager.putChannel(channel);
+//                NettyChannelManager.putChannel(channel);
             } else {
                 logger.info("连接失败!");
             }

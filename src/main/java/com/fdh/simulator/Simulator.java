@@ -70,7 +70,8 @@ public class Simulator {
             logger.error("TCP连接数不能大于10000！");
             return false;
         }
-        NettyChannelManager.test(testAvailableTime);
+        NettyChannelManager.setExpireTime(testAvailableTime);
+//        NettyChannelManager.test(testAvailableTime);
         return true;
     }
 

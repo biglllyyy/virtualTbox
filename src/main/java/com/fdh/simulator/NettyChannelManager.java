@@ -48,15 +48,22 @@ public class NettyChannelManager {
      * @param expireTime
      */
     public static void setExpireTime(int expireTime) {
-        expiringMap.setExpiration(expireTime, TimeUnit.MINUTES);
+        NettyChannelManager.expireTime = expireTime;
     }
 
-    public static void test(int expireTime) {
+    static {
         expiringMap = ExpiringMap.builder()
-                .expiration(expireTime, TimeUnit.MINUTES)
+                .variableExpiration()
                 .expirationListener(new ExpirieListenner())
                 .build();
     }
+
+//    public static void test(int expireTime) {
+//        expiringMap = ExpiringMap.builder()
+//                .variableExpiration()
+//                .expirationListener(new ExpirieListenner())
+//                .build();
+//    }
 
 
     /**
@@ -86,7 +93,7 @@ public class NettyChannelManager {
      * @param channel
      */
     public static void putChannel(Channel channel) {
-        expiringMap.put(channel.id().asLongText(), channel);
+        expiringMap.put(channel.id().asLongText(), channel, ExpirationPolicy.CREATED, expireTime, TimeUnit.SECONDS);
     }
 
     public static void removeChannel(Channel channel) {

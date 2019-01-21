@@ -23,25 +23,26 @@ public class ScheduleTask extends TimerTask {
     @Override
     public void run() {
 
-        ExpiringMap<String, Channel> expiringMap = NettyChannelManager.expiringMap;
-        if (expiringMap.size() > 0) {
-            Set<Map.Entry<String, Channel>> entries = expiringMap.entrySet();
-            for (Map.Entry<String, Channel> entry : entries) {
-                Channel channel = entry.getValue();
-                if(channel.isOpen() && channel.isActive()){
-                    int packetSerialNum = PacketAnalyze.getPacketSerialNum();
-                    PacketAnalyze.sendPacketMap.put(packetSerialNum,System.currentTimeMillis());
-                    byte[] realTimePacket = VechileUtils.getTimingPacket(channel, packetSerialNum);
-                    channel.writeAndFlush(realTimePacket);
-                    String toHexString = ByteUtils.bytesToHexString(realTimePacket);
-                    logger.info("[CHANNEL]" + "[" + channel.id().asShortText() + "][SENDED]->" + toHexString);
+        try {
+            ExpiringMap<String, Channel> expiringMap = NettyChannelManager.expiringMap;
+            if (expiringMap.size() > 0) {
+                Set<Map.Entry<String, Channel>> entries = expiringMap.entrySet();
+                for (Map.Entry<String, Channel> entry : entries) {
+                    Channel channel = entry.getValue();
+                    if(channel.isOpen() && channel.isActive()){
+                        int packetSerialNum = PacketAnalyze.getPacketSerialNum();
+                        PacketAnalyze.sendPacketMap.put(packetSerialNum,System.currentTimeMillis());
+                        byte[] realTimePacket = VechileUtils.getTimingPacket(channel, packetSerialNum);
+                        channel.writeAndFlush(realTimePacket);
+                        String toHexString = ByteUtils.bytesToHexString(realTimePacket);
+                        logger.info("[CHANNEL]" + "[" + channel.id().asShortText() + "][SENDED][NO."+packetSerialNum+"]->" + toHexString);
+                    }
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("数据发送异常");
         }
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
-        }
+
     }
 }

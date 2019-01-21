@@ -30,7 +30,6 @@ public class ExpirieListenner implements ExpirationListener<String, Channel> {
 //                ReportUtils.report();
 //                Simulator.bisRuning = false;
 //            }
-            channel.close();
             logger.info("[channel]" + "[" + channel.id() + "]" + "[已经断开]");
             long activeChannelSize = NettyChannelManager.getActiveChannelSize();
             if(activeChannelSize <=0){
