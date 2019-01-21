@@ -31,7 +31,7 @@ public class ScheduleTask extends TimerTask {
                 if(channel.isOpen() && channel.isActive()){
                     int packetSerialNum = PacketAnalyze.getPacketSerialNum();
                     PacketAnalyze.sendPacketMap.put(packetSerialNum,System.currentTimeMillis());
-                    byte[] realTimePacket = VechileUtils.getRealTimePacket(channel, packetSerialNum);
+                    byte[] realTimePacket = VechileUtils.getTimingPacket(channel, packetSerialNum);
                     channel.writeAndFlush(realTimePacket);
                     String toHexString = ByteUtils.bytesToHexString(realTimePacket);
                     logger.info("[CHANNEL]" + "[" + channel.id().asShortText() + "][SENDED]->" + toHexString);

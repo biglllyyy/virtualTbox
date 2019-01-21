@@ -65,6 +65,7 @@ public class ConnectTask implements Runnable {
             Channel channel = connectFuture.channel();
             boolean isconnected = channel.isActive();
             if (isconnected) {
+                //存放vin和channel的关系
                 Simulator.channnelVinMap.put(channel.id().asLongText(), VechileUtils.getVin());
                 NettyChannelManager.putChannel(channel);
                 byte[] realTimePacket = "hello world!".getBytes();

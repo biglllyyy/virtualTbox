@@ -3,7 +3,6 @@ package com.fdh.simulator;
 import com.fdh.simulator.ui.Simulator;
 import com.fdh.simulator.utils.ReportUtils;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import net.jodah.expiringmap.ExpirationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
