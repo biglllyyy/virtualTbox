@@ -33,7 +33,6 @@ public class SimulatorHandler extends ChannelInboundHandlerAdapter {
             //防止长期占用内存过大，及时销毁
         }
         logger.info("[CHANNEL]" + "[" + ctx.channel().id().asShortText() + "][RECE][NO."+packetSerail+"]->" + ByteUtils.bytesToHexString(bytes));
-        long activeChannelSize = NettyChannelManager.getActiveChannelSize();
 	}
 
 	@Override

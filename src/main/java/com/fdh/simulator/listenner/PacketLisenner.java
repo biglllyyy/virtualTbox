@@ -32,7 +32,7 @@ public class PacketLisenner implements ExpirationListener<Integer, Long> {
             logger.error("***********************************************************测试完成***********************************************************");
             Simulator.timer.cancel();
             //断开所有的连接不在接收报文
-            NettyChannelManager.removeAll();
+//            NettyChannelManager.removeAll();
             ReportUtils.report();
         }
 

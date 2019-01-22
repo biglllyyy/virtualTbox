@@ -43,8 +43,7 @@ public class ConnectTask implements Runnable {
         bootstrap.channel(NioSocketChannel.class);
         bootstrap.option(ChannelOption.SO_KEEPALIVE, true);// TCP 连接保活机制，2小时监测一次
         // 接收缓冲区,最小32直接，初始是1500字节，最大65535字节
-        bootstrap.option(ChannelOption.RCVBUF_ALLOCATOR,
-                new AdaptiveRecvByteBufAllocator(32, 1500, 65536));
+        bootstrap.option(ChannelOption.RCVBUF_ALLOCATOR, new AdaptiveRecvByteBufAllocator(32, 1500, 65536));
         bootstrap.option(ChannelOption.TCP_NODELAY, true);
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
 
@@ -60,14 +59,15 @@ public class ConnectTask implements Runnable {
         try {
             // Start the client.
             connectFuture = bootstrap.connect(address, port).sync();
-            Channel channel = connectFuture.channel();
-            boolean isconnected = channel.isActive();
-            if (isconnected) {
-                //存放vin和channel的关系
-//                NettyChannelManager.putChannel(channel);
-            } else {
-                logger.info("连接失败!");
-            }
+            connectFuture.channel().closeFuture().sync();
+//            Channel channel = connectFuture.channel();
+//            boolean isconnected = channel.isActive();
+//            if (isconnected) {
+//                //存放vin和channel的关系
+////                NettyChannelManager.putChannel(channel);
+//            } else {
+//                logger.info("连接失败!");
+//            }
         } catch (InterruptedException e) {
             e.printStackTrace();
             logger.error("连接失败!");

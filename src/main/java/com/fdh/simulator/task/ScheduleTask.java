@@ -30,6 +30,8 @@ public class ScheduleTask extends TimerTask {
      */
     int count = 10;
 
+    int mcount = 0;
+
     /**
      * 每包的过期时间
      */
@@ -59,8 +61,10 @@ public class ScheduleTask extends TimerTask {
             logger.info("数据发送完成!");
             return;
         }
+        mcount++;
         try {
             ConcurrentHashMap<String, Channel> concurrentHashMap = NettyChannelManager.getChannnelMap();
+            logger.error("第:"+mcount+"次发送，发送量"+concurrentHashMap.size());
             if (concurrentHashMap.size() > 0) {
                 Set<Map.Entry<String, Channel>> entries = concurrentHashMap.entrySet();
                 for (Map.Entry<String, Channel> entry : entries) {
@@ -82,6 +86,7 @@ public class ScheduleTask extends TimerTask {
             logger.error("数据发送异常");
         }
         count--;
+
 
     }
 }
