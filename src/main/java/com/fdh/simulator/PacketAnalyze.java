@@ -1,8 +1,12 @@
 package com.fdh.simulator;
 
 
+import com.fdh.simulator.listenner.PacketLisenner;
+import net.jodah.expiringmap.ExpiringMap;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /***
@@ -13,44 +17,36 @@ public class PacketAnalyze {
     public static AtomicInteger atomicLong = new AtomicInteger(0);
 
     /**
+     * 已发送数据包过期的个数
+     */
+    public static AtomicInteger expireSendCount = new AtomicInteger(0);
+
+    /**
      * key packetserialNum
      * value send packet timestamp
      */
-    public static ConcurrentHashMap<Integer, Long> sendPacketMap = new ConcurrentHashMap<Integer, Long>();
+    public static ExpiringMap<Integer, Long> sendPacketMap = ExpiringMap.builder()
+            .variableExpiration()
+            .expirationListener(new PacketLisenner())
+            .build();
+
+
 
     /***
      * key packetserialNum
      * value send and recevie time
      */
-    public static ConcurrentHashMap<Integer, Integer> packetMap = new ConcurrentHashMap<Integer, Integer>();
+    public static ConcurrentHashMap<Integer, Integer> receiveMap = new ConcurrentHashMap<Integer, Integer>();
 
     public static int getPacketSerialNum() {
         return atomicLong.incrementAndGet();
-    }
-
-
-    public static int partition(long[] array, int lo, int hi) {
-        //固定的切分方式
-        long key = array[lo];
-        while (lo < hi) {
-            while (array[hi] >= key && hi > lo) {//从后半部分向前扫描
-                hi--;
-            }
-            array[lo] = array[hi];
-            while (array[lo] <= key && hi > lo) {//从前半部分向后扫描
-                lo++;
-            }
-            array[hi] = array[lo];
-        }
-        array[hi] = key;
-        return hi;
     }
 
     /**
      * 分析报文性能
      */
     public static List<Integer> analyze() {
-        List<Integer> responseDiff = (List<Integer>) packetMap.values();
+        List<Integer> responseDiff = (List<Integer>) receiveMap.values();
         Collections.sort(responseDiff);
         return responseDiff;
     }
@@ -108,20 +104,30 @@ public class PacketAnalyze {
     }
 
 
-    public static void main(String[] args) {
-        long currentTimeMillis = System.currentTimeMillis();
-        List<Integer> a = new ArrayList<>();
-        for (int i = 0; i < 10000000; i++) {
-            a.add(i);
+    public static void main(String[] args) throws InterruptedException {
+//        long currentTimeMillis = System.currentTimeMillis();
+//        List<Integer> a = new ArrayList<>();
+//        for (int i = 0; i < 10000000; i++) {
+//            a.add(i);
+//        }
+//        String average = average(a);
+//        String max = max(a);
+//        String min = min(a);
+//        long currentTimeMillis1 = System.currentTimeMillis();
+//        System.out.println(average);
+//        System.out.println(max);
+//        System.out.println(min);
+//        System.out.println(currentTimeMillis1 - currentTimeMillis);
+
+        for (int i = 0; i < 10; i++) {
+            sendPacketMap.put(i, (long) i,1, TimeUnit.SECONDS);
         }
-        String average = average(a);
-        String max = max(a);
-        String min = min(a);
-        long currentTimeMillis1 = System.currentTimeMillis();
-        System.out.println(average);
-        System.out.println(max);
-        System.out.println(min);
-        System.out.println(currentTimeMillis1 - currentTimeMillis);
+
+
+        for (int i = 0; i < 1000000; i++) {
+
+            Thread.sleep(1000);
+        }
 
     }
 }

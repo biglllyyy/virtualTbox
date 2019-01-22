@@ -20,7 +20,7 @@ public class ReportUtils {
     public static void report() {
         logger.info("正在生成测试报告");
         String fileName = Utils.getNowDate();
-        String report_path = PropertiesUtils.getProperty("report_path");
+        String report_path = PropertiesUtils.getProperty("client.report.path");
         File path = new File(report_path);
         if (!path.exists()) {
             path.mkdirs();
@@ -40,12 +40,12 @@ public class ReportUtils {
         try {
             String tile = "|发送总报文数|\t\t|接收总报文数|\t\t|丢失率|\t\t|最大响应时间(ms)|\t\t|最小响应时间(ms)|\t\t|平均响应时间(ms)|\n";
             double sendCount = PacketAnalyze.atomicLong.get();//总发送量
-            double receiveCount = PacketAnalyze.packetMap.size();//总接收送量
+            double receiveCount = PacketAnalyze.receiveMap.size();//总接收送量
             double lostPercent = 0;
             if (sendCount != 0) {
                 lostPercent = (sendCount - receiveCount) * 100 / sendCount;
             }
-            Collection<Integer> values = PacketAnalyze.packetMap.values();
+            Collection<Integer> values = PacketAnalyze.receiveMap.values();
 
             List<Integer> receviceList = new ArrayList<Integer>(values);
             String max = PacketAnalyze.max(receviceList);
@@ -82,7 +82,7 @@ public class ReportUtils {
         logger.info("测试报告生成完毕");
     }
 
-    public static void main(String[] args) {
-        report();
-    }
+//    public static void main(String[] args) {
+//        report();
+//    }
 }

@@ -3,6 +3,7 @@ package com.fdh.simulator;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -23,90 +24,88 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 public class Simulator {
 
     private ThreadPoolTaskExecutor taskExecutor;
-
     public static Timer timer;
-
-    public static boolean bisRuning =false;
+    private String address;
+    private int port;
+    private int sendInterval;
+    private int tcpConnections;
+    private TimerTask  timerTask;
 
     /**
      * 存储channelId和vin对应关系的map
      */
-    public static ConcurrentHashMap<String, String> channnelVinMap = new ConcurrentHashMap<String, String>();
-    PropertyChangeSupport listeners = new PropertyChangeSupport(this);
+//    PropertyChangeSupport listeners = new PropertyChangeSupport(this);
+
     private static final Logger logger = LoggerFactory.getLogger(Simulator.class);
 
-    /**
-     * 初始化1000个VIN号
-     */
     public Simulator() {
         taskExecutor = SpringContextUtils.getBean("taskExecutor");
-        boolean config = initConfig();
-        if (config) {
-            connect(address, port);
-        } else {
-            logger.error("初始化参数失败");
-        }
+//        connect(address, port);
     }
 
-    private String address;
-    private int port;
-    private int sendInterval;
-    private int testAvailableTime;
-    private int tcpConnections;
-
-    /***
-     * 初始化配置
-     */
-    private boolean initConfig() {
-        address = PropertiesUtils.getProperty("serverip");
-        port = PropertiesUtils.getIntegerProperty("serverport");
-        if (StringUtil.isNullOrEmpty(address)) {
-            logger.error("ip或者端口为空");
-        }
-        sendInterval = PropertiesUtils.getIntegerProperty("send_interval");
-        testAvailableTime = PropertiesUtils.getIntegerProperty("test_available_time");
-        tcpConnections = PropertiesUtils.getIntegerProperty("tcp_connections");
-        if (tcpConnections > 10000) {
-            logger.error("TCP连接数不能大于10000！");
-            return false;
-        }
-        NettyChannelManager.setExpireTime(testAvailableTime);
-//        NettyChannelManager.test(testAvailableTime);
-        return true;
-    }
-
-//    public void startControllPanel() {
-//        new ControlPanel();
-//    }
-
-    public void connect(String inetHost, int inetPort) {
-        //设置测试结束时间
+    public void connect() {
+        // TODO: 2019/1/22 在每个连接处理还是总的workGroup
         EventLoopGroup workgroup = new NioEventLoopGroup(1);
-        BlockingQueue<Runnable> threads = new LinkedBlockingQueue<>();
         for (int i = 1; i <= tcpConnections; i++) {
-            taskExecutor.submit(new ConnectTask(inetHost, inetPort, i, workgroup));
+            taskExecutor.submit(new ConnectTask(address, port, i, workgroup));
         }
         timer = new Timer();
-        timer.schedule(new ScheduleTask(), 0, sendInterval);
-        bisRuning = true;
+        timer.schedule(timerTask, 0, sendInterval);
     }
 
-//    public void close() {
-//        //所有的客户端连接全部断开
-//        NettyChannelManager.removeAllChannel();
+
+//    public void addPropertyChangerListsener(PropertyChangeListener listener) {
+//        listeners.addPropertyChangeListener(listener);
+//    }
+//
+//    public void removePropertyChangerListener(PropertyChangeListener listener) {
+//        listeners.removePropertyChangeListener(listener);
+//    }
+//
+//    public void firePropertyChangerListener(String prop, Object oldValue,
+//                                            Object newValue) {
+//
+//        listeners.firePropertyChange(prop, oldValue, newValue);
 //    }
 
-    public void addPropertyChangerListsener(PropertyChangeListener listener) {
-        listeners.addPropertyChangeListener(listener);
+
+    public TimerTask getTimerTask() {
+        return timerTask;
     }
 
-    public void removePropertyChangerListener(PropertyChangeListener listener) {
-        listeners.removePropertyChangeListener(listener);
+    public void setTimerTask(TimerTask timerTask) {
+        this.timerTask = timerTask;
     }
 
-    public void firePropertyChangerListener(String prop, Object oldValue,
-                                            Object newValue) {
+    public String getAddress() {
+        return address;
+    }
 
-        listeners.firePropertyChange(prop, oldValue, newValue);
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public int getSendInterval() {
+        return sendInterval;
+    }
+
+    public void setSendInterval(int sendInterval) {
+        this.sendInterval = sendInterval;
+    }
+
+    public int getTcpConnections() {
+        return tcpConnections;
+    }
+
+    public void setTcpConnections(int tcpConnections) {
+        this.tcpConnections = tcpConnections;
     }
 }

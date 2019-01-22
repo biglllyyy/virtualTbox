@@ -23,22 +23,17 @@ public class VechileUtils {
     public static String prefix = "LNBSCB3FXYZ";
 
     public static AtomicInteger suffix = new AtomicInteger(100000);
-//    public static byte[] getRealTimePacket(Channel channel, int packetSerialNum) {
-//    }
 
     /**
      * 校时数据包
      *
-     * @param channel
+     * @param vin
      * @param packetSerialNum
      * @return
      */
+    public static byte[] getTimingPacket(String vin, int packetSerialNum) {
 
 
-    public static byte[] getTimingPacket(Channel channel, int packetSerialNum) {
-
-
-        String vin = Simulator.channnelVinMap.get(channel.id().asLongText());
 //        String vin = getVin();
         byte[] vinBytes = vin.getBytes();
         byte[] dataLengh = {0x01, 0x00, 0x04};

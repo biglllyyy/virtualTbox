@@ -1,6 +1,5 @@
 package com.fdh.simulator;
 
-import com.fdh.simulator.utils.ReportUtils;
 import io.netty.channel.Channel;
 import net.jodah.expiringmap.ExpirationListener;
 import org.slf4j.Logger;

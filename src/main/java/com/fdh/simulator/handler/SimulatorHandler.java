@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 public class SimulatorHandler extends ChannelInboundHandlerAdapter {
 
-	private Simulator printer;
 	private static final Logger logger = LoggerFactory.getLogger(Simulator.class);
     public SimulatorHandler() {
     }
@@ -30,17 +29,11 @@ public class SimulatorHandler extends ChannelInboundHandlerAdapter {
         Long sendTimeMillis = PacketAnalyze.sendPacketMap.get(packetSerail);
         if(sendTimeMillis!=null){
             Integer diff =(int)(receiveTimeMillis1-sendTimeMillis);
-            PacketAnalyze.packetMap.put(packetSerail,diff);
+            PacketAnalyze.receiveMap.put(packetSerail,diff);
             //防止长期占用内存过大，及时销毁
-            PacketAnalyze.sendPacketMap.remove(packetSerail);
         }
         logger.info("[CHANNEL]" + "[" + ctx.channel().id().asShortText() + "][RECE][NO."+packetSerail+"]->" + ByteUtils.bytesToHexString(bytes));
         long activeChannelSize = NettyChannelManager.getActiveChannelSize();
-        if(activeChannelSize == PacketAnalyze.atomicLong.get()){
-            logger.info("**********************测试时间到**********************");
-            Simulator.timer.cancel();
-            ReportUtils.report();
-        }
 	}
 
 	@Override
@@ -53,7 +46,6 @@ public class SimulatorHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
         NettyChannelManager.putChannel(channel);//保存channel
-        Simulator.channnelVinMap.put(channel.id().asLongText(), VechileUtils.getVin());//保存changnel和Vin对应关系
     }
 
     @Override
