@@ -11,6 +11,10 @@ import net.jodah.expiringmap.ExpiringMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * @author fudh
  * @ClassNmme PacketLisenner
@@ -32,8 +36,16 @@ public class PacketLisenner implements ExpirationListener<Integer, Long> {
             logger.error("***********************************************************测试完成***********************************************************");
             Simulator.timer.cancel();
             //断开所有的连接不在接收报文
-//            NettyChannelManager.removeAll();
+            NettyChannelManager.removeAll();
             ReportUtils.report();
+            ConcurrentHashMap<Integer, Integer> receiveMap = PacketAnalyze.receiveMap;
+            Set<Map.Entry<Integer, Integer>> entries = receiveMap.entrySet();
+            for (Map.Entry<Integer, Integer> entry : entries) {
+                Integer key = entry.getKey();
+                Integer value = entry.getValue();
+                logger.error("数据包："+key+"过期了，累计耗时："+value);
+            }
+
         }
 
     }
