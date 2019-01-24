@@ -129,11 +129,14 @@
                         directory in the assembled application -->
                     <!-- <copyConfigurationDirectory>true</copyConfigurationDirectory> -->
                     <!-- repositoryName：依赖包目录，默认repo -->
+                    <!-- 配置文件的目标目录 -->
+                    <configurationDirectory>conf</configurationDirectory>
                     <copyConfigurationDirectory>true</copyConfigurationDirectory>
                     <repositoryName>lib</repositoryName>
-                    <!-- Include the target configuration directory in the beginning of
-                        the classpath declaration in the bin scripts -->
+                    <!-- 拷贝配置文件到上面的目录中 -->
                     <includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
+                    <!-- 从哪里拷贝配置文件 (默认src/main/config) -->
+                    <configurationSourceDirectory>src/main/resources/config/*.properties</configurationSourceDirectory>
                     <!-- set alternative assemble directory -->
                     <assembleDirectory>${project.build.directory}/fdh-assemble</assembleDirectory>
                     <!-- Extra JVM arguments that will be included in the bin scripts -->
@@ -149,7 +152,7 @@
 
                     <programs>
                         <program>
-                            <mainClass>com.fdh.simulator.ui.ControlPanel</mainClass>
+                            <mainClass>com.fdh.simulator.StartSimulator</mainClass>
                             <id>virtualtbox</id>
                         </program>
                     </programs>

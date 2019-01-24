@@ -69,6 +69,7 @@ public class ConnectTask implements Runnable {
 //                logger.info("连接失败!");
 //            }
         } catch (InterruptedException e) {
+
             e.printStackTrace();
             logger.error("连接失败!");
         }
