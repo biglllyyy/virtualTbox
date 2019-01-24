@@ -56,6 +56,11 @@ public class ScheduleTask extends TimerTask {
     @Override
     public void run() {
 
+        ConcurrentHashMap<String, Channel> concurrentHashMap = NettyChannelManager.getChannnelMap();
+
+        if(concurrentHashMap.size()==0){
+            return;
+        }
         if (count <= 0) {
             Simulator.timer.cancel();
             logger.info("数据发送完成!");
@@ -63,8 +68,7 @@ public class ScheduleTask extends TimerTask {
         }
         mcount++;
         try {
-            ConcurrentHashMap<String, Channel> concurrentHashMap = NettyChannelManager.getChannnelMap();
-            logger.error("第:"+mcount+"次发送，发送量"+concurrentHashMap.size());
+//            logger.error("第:" + mcount + "次发送，发送量" + concurrentHashMap.size());
             if (concurrentHashMap.size() > 0) {
                 Set<Map.Entry<String, Channel>> entries = concurrentHashMap.entrySet();
                 for (Map.Entry<String, Channel> entry : entries) {

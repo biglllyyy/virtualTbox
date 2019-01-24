@@ -19,18 +19,18 @@ public class StartSimulator {
         ctx.start();
         Scanner scanner = new Scanner(System.in);//接收键盘输入的数据
         System.out.println("**************请输入数字1开始测试**************");
-        Simulator simulator = SpringContextUtils.getBean("simulator");
-        simulator.connect();
-//        while (scanner.hasNext()) {//现在有输入数据
-//            int data = scanner.nextInt();
-//            if (data == 1) {
-//                Simulator simulator = SpringContextUtils.getBean("simulator");
-//                simulator.connect();
-//                break;
-//            } else {
-//                System.out.println("输入有误！");
-//            }
-//
-//        }
+//        Simulator simulator = SpringContextUtils.getBean("simulator");
+//        simulator.connect();
+        while (scanner.hasNext()) {//现在有输入数据
+            int data = scanner.nextInt();
+            if (data == 1) {
+                Simulator simulator = SpringContextUtils.getBean("simulator");
+                simulator.connect();
+                break;
+            } else {
+                System.out.println("输入有误！");
+            }
+
+        }
     }
 }

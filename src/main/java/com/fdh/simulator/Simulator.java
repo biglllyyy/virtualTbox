@@ -39,7 +39,7 @@ public class Simulator {
     private static final Logger logger = LoggerFactory.getLogger(Simulator.class);
 
     public Simulator() {
-        taskExecutor = SpringContextUtils.getBean("taskExecutor");
+//        taskExecutor = SpringContextUtils.getBean("taskExecutor");
 //        connect(address, port);
     }
 
@@ -55,11 +55,6 @@ public class Simulator {
         /***
          * 适当延时等待连接完成
          */
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         timer = new Timer();
         timer.schedule(timerTask, 0, sendInterval);
     }
