@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.fdh.simulator.utils.VechileUtils;
 import io.netty.channel.Channel;
 
 /**
@@ -31,7 +32,7 @@ public class NettyChannelManager {
      */
     public static void putChannel(Channel channel) {
         channnelMap.put(channel.id().asLongText(),channel);
-//        channnelVinMap.put(channel.id().asLongText(),VechileUtils.getVin());
+        channnelVinMap.put(channel.id().asLongText(), VechileUtils.getVin());
     }
     public static void removeChannel(Channel channel) {
         String chanelId = channel.id().asLongText();
