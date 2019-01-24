@@ -99,7 +99,7 @@
                 <directory>src/main/resources</directory>
                 <targetPath>${project.build.directory}/classes</targetPath>
                 <excludes>
-                    <exclude>config/**/*</exclude>
+                    <exclude>config/**/*.xml</exclude>
                 </excludes>
                 <filtering>true</filtering>
             </resource>
@@ -112,12 +112,30 @@
         </resources>
 
         <plugins>
-            <!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.0.0</version> <executions> <execution> <id>make-assembly</id>
-                绑定到package生命周期阶段上 <phase>package</phase> <goals> 绑定到package生命周期阶段上 <goal>single</goal>只运行一次
-                </goals> <configuration> <descriptors> 描述文件路径 <descriptor>src/main/assembly/package.xml</descriptor>
-                </descriptors> </configuration> </execution> </executions> </plugin> -->
-            <!-- 此插件生成自动化运行脚本 -->
+
+            <!-- The configuration of maven-assembly-plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <!--The configuration of the plugin-->
+                <configuration>
+                    <!--Specifies the configuration file of the assembly plugin-->
+                    <descriptors>
+                        <descriptor>src/main/assembly/package.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>appassembler-maven-plugin</artifactId>
@@ -129,11 +147,18 @@
                         directory in the assembled application -->
                     <!-- <copyConfigurationDirectory>true</copyConfigurationDirectory> -->
                     <!-- repositoryName：依赖包目录，默认repo -->
-                    <copyConfigurationDirectory>true</copyConfigurationDirectory>
                     <repositoryName>lib</repositoryName>
                     <!-- Include the target configuration directory in the beginning of
                         the classpath declaration in the bin scripts -->
                     <includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
+
+                    <!-- 配置文件的目标目录 -->
+                    <configurationDirectory>conf</configurationDirectory>
+                    <!-- 拷贝配置文件到上面的目录中 -->
+                    <copyConfigurationDirectory>true</copyConfigurationDirectory>
+                    <!-- 从哪里拷贝配置文件 (默认src/main/config) -->
+                    <configurationSourceDirectory>src/main/resources/config</configurationSourceDirectory>
+
                     <!-- set alternative assemble directory -->
                     <assembleDirectory>${project.build.directory}/fdh-assemble</assembleDirectory>
                     <!-- Extra JVM arguments that will be included in the bin scripts -->
@@ -149,7 +174,7 @@
 
                     <programs>
                         <program>
-                            <mainClass>com.fdh.simulator.ui.ControlPanel</mainClass>
+                            <mainClass>com.fdh.simulator.StartSimulator</mainClass>
                             <id>virtualtbox</id>
                         </program>
                     </programs>

@@ -4,19 +4,15 @@
     <formats>
         <format>zip</format>
     </formats>
-    <!-- 压缩包下是否生成和项目名相同的根目录 -->
     <includeBaseDirectory>true</includeBaseDirectory>
-    
-   <!--  <fileSets>
+    <fileSets>
         <fileSet>
-          将src/main/config目录下的文件打包到config目录下
             <directory>src/main/config</directory>
             <outputDirectory>config</outputDirectory>
         </fileSet>
-    </fileSets> -->
+    </fileSets>
     <dependencySets>
         <dependencySet>
-       <!--  打包运行时依赖的jar包 -->
             <outputDirectory>lib</outputDirectory>
             <scope>runtime</scope>
         </dependencySet>
