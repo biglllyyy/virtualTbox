@@ -3,7 +3,7 @@
 <Configuration status="off" monitorInterval="1800">
 
     <properties>
-        <property name="LOG_HOME">../logs/iov-simulator</property>
+        <property name="LOG_HOME">/logs/iov-simulator/</property>
         <property name="FILE_NAME">info</property>
     </properties>
 
@@ -95,7 +95,7 @@
                      The value dynamically determines the name of the log file. -->
                 <Route>
                     <RollingFile name="Rolling-${ctx:ROUTINGKEY}"
-                                 fileName="../logs/iov-gateway/${date:yyyy-MM-dd}/${ctx:ROUTINGKEY}.log"
+                                 fileName="${LOG_HOME}${date:yyyy-MM-dd}/${ctx:ROUTINGKEY}.log"
                                  filePattern="./logs/iov-gateway/${date:yyyy-MM-dd}/${ctx:ROUTINGKEY}-%d{yyyy-MM-dd}-%i.log.gz">
                         <PatternLayout
                                 pattern="[%d{MM-dd HH:mm:ss}]  %m%n"/>

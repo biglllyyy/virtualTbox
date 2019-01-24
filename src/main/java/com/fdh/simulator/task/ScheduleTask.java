@@ -82,7 +82,7 @@ public class ScheduleTask extends TimerTask {
                         channel.writeAndFlush(realTimePacket);
                         String toHexString = ByteUtils.bytesToHexString(realTimePacket);
                         logger.info("[CHANNEL]" + "[" + channel.id().asShortText() + "][SENDED][NO." + packetSerialNum + "]->" + toHexString);
-                        channel.writeAndFlush("hello wold!");
+                        channel.writeAndFlush(realTimePacket);
                     }
                 }
             }
