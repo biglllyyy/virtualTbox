@@ -3,15 +3,8 @@ package com.fdh.simulator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
-import com.fdh.simulator.task.ConnectTask;
-import com.fdh.simulator.utils.VechileUtils;
-import net.jodah.expiringmap.ExpirationPolicy;
-import net.jodah.expiringmap.ExpiringMap;
 import io.netty.channel.Channel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Server端 Channel管理器
@@ -38,7 +31,7 @@ public class NettyChannelManager {
      */
     public static void putChannel(Channel channel) {
         channnelMap.put(channel.id().asLongText(),channel);
-        channnelVinMap.put(channel.id().asLongText(),VechileUtils.getVin());
+//        channnelVinMap.put(channel.id().asLongText(),VechileUtils.getVin());
     }
     public static void removeChannel(Channel channel) {
         String chanelId = channel.id().asLongText();
