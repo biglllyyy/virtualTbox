@@ -49,6 +49,19 @@ public class Simulator {
         for (int i = 0; i < tcpConnections; i++) {
             new Thread(new ConnectTask(address,port,i,workgroup)).start();
         }
+
+        /**
+         * 处理登陆线程
+         */
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        }).start();
+        /**
+         * 处理实时报文发送，等待登陆完成立马发送数据
+         */
         timer = new Timer();
         timer.schedule(timerTask, 0, sendInterval);
     }

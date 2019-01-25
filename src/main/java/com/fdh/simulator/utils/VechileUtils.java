@@ -63,7 +63,7 @@ public class VechileUtils {
         if (commandTag == CommandTag.REALTIME_INFO_REPORT) {
             count = 400;
             //实时数据处理在包序号后面追假的实时数据
-        } else if(commandTag == CommandTag.HEARTBEAT) {
+        } else if(commandTag == CommandTag.HEARTBEAT || commandTag == CommandTag.VEHICLE_LOGIN) {
             count = 0;
         } else if(commandTag==CommandTag.VEHICLE_REGISTER){
             vechileData = geRegisterData(vin);
@@ -194,7 +194,7 @@ public class VechileUtils {
 //        byte[] timingPacket = getPacket(CommandTag.REALTIME_INFO_REPORT, vin, 1);
 //        System.out.println(ByteUtils.bytesToHexString(timingPacket));
 //        vechileData = geRegisterData(vin);
-        byte[] packet = getPacket(CommandTag.VEHICLE_REGISTER, vin, 1L);
+        byte[] packet = getPacket(CommandTag.VEHICLE_LOGIN, vin, 1L);
         System.out.println(ByteUtils.bytesToHexString(packet));
     }
 

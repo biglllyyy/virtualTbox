@@ -22,12 +22,17 @@ public class NettyChannelManager {
     public static ConcurrentHashMap<String, String> channnelVinMap = new ConcurrentHashMap<String, String>();
 
     /***
-     * chanelId和channel的对应关系
+     * 已经建立连接的chanelId和channel的对应关系
      */
     public static ConcurrentHashMap<String, Channel>  channnelMap = new ConcurrentHashMap<String, Channel>();
 
     /**
-     * 添加通道
+     * 已经登陆的channel,chanelId和channel的对应关系
+     */
+    public  static ConcurrentHashMap<String, Channel> loginChanel = new ConcurrentHashMap<>();
+
+    /**
+     * 连接建立后注册通道
      * @param channel
      */
     public static void putChannel(Channel channel) {
@@ -38,6 +43,22 @@ public class NettyChannelManager {
         String chanelId = channel.id().asLongText();
         channnelMap.remove(chanelId);
         channnelVinMap.remove(chanelId);
+    }
+
+    /**
+     * 将已经登陆channel添加到map中
+     * @param channel
+     */
+    public static void putLoginChannel(Channel channel) {
+        loginChanel.put(channel.id().asLongText(), channel);
+    }
+
+    /**
+     * 移除已经登陆的channel
+     * @param channel
+     */
+    public static void removeLoginChannel(Channel channel) {
+        channnelVinMap.remove(channel.id().asLongText());
     }
 
     public  static  void removeAll(){
@@ -65,6 +86,11 @@ public class NettyChannelManager {
     public static ConcurrentHashMap<String, Channel> getChannnelMap() {
         return channnelMap;
     }
+
+    public static ConcurrentHashMap<String, Channel> getLoginChannnelMap() {
+        return loginChanel;
+    }
+
 
     public static void setChannnelMap(ConcurrentHashMap<String, Channel> channnelMap) {
         NettyChannelManager.channnelMap = channnelMap;

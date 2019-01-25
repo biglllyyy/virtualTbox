@@ -11,22 +11,22 @@
     <context:property-placeholder location="classpath:config.properties" ignore-unresolvable="true"/>
 
     <context:component-scan base-package="com.fdh.simulator"/>
-    <!-- 线程池配置 -->
-    <!--<bean id="taskExecutor"-->
-          <!--class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">-->
-        <!--&lt;!&ndash; 核心线程数 &ndash;&gt;-->
-        <!--<property name="corePoolSize" value="10"/>-->
-        <!--&lt;!&ndash; 最大线程数 &ndash;&gt;-->
-        <!--<property name="maxPoolSize" value="500"/>-->
-        <!--&lt;!&ndash; 队列最大长度 &ndash;&gt;-->
-        <!--<property name="queueCapacity" value="3000"/>-->
-        <!--&lt;!&ndash; 线程池维护线程所允许的空闲时间 &ndash;&gt;-->
-        <!--<property name="keepAliveSeconds" value="300"/>-->
-        <!--&lt;!&ndash; 处理程序遭到拒绝将抛出运行时 RejectedExecutionException的处理策略 &ndash;&gt;-->
-        <!--<property name="rejectedExecutionHandler">-->
-            <!--<bean class="java.util.concurrent.ThreadPoolExecutor$AbortPolicy"/>-->
-        <!--</property>-->
-    <!--</bean>-->
+    <!-- 线程池配置,处理登陆使用和实时数据发送 -->
+    <bean id="taskExecutor"
+          class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <!-- 核心线程数 -->
+        <property name="corePoolSize" value="10"/>
+        <!-- 最大线程数 -->
+        <property name="maxPoolSize" value="100"/>
+        <!-- 队列最大长度 -->
+        <property name="queueCapacity" value="3000"/>
+        <!-- 线程池维护线程所允许的空闲时间 -->
+        <property name="keepAliveSeconds" value="60"/>
+        <!-- 处理程序遭到拒绝将抛出运行时 RejectedExecutionException的处理策略 -->
+        <property name="rejectedExecutionHandler">
+            <bean class="java.util.concurrent.ThreadPoolExecutor$AbortPolicy"/>
+        </property>
+    </bean>
 
     <!-- SpringContextUtils定义 -->
     <bean id="springContextUtils" class="com.fdh.simulator.utils.SpringContextUtils" lazy-init="false"/>

@@ -18,11 +18,6 @@ public class PacketAnalyze {
     public static AtomicLong atomicLong = new AtomicLong(0);
 
     /**
-     * 已发送数据包过期的个数
-     */
-    public static AtomicInteger expireSendCount = new AtomicInteger(0);
-
-    /**
      * key packetserialNum
      * value send packet timestamp
      */

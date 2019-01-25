@@ -11,6 +11,7 @@ import io.netty.channel.Channel;
 import net.jodah.expiringmap.ExpirationPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +39,8 @@ public class ScheduleTask extends TimerTask {
      */
     int packeExpiredTime = 10;
 
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+
     public int getCount() {
         return count;
     }
@@ -57,9 +60,9 @@ public class ScheduleTask extends TimerTask {
     @Override
     public void run() {
 
-        ConcurrentHashMap<String, Channel> concurrentHashMap = NettyChannelManager.getChannnelMap();
+        ConcurrentHashMap<String, Channel> loginChannnelMap = NettyChannelManager.getLoginChannnelMap();
 
-        if (concurrentHashMap.size() == 0) {
+        if (loginChannnelMap.size() == 0) {
             return;
         }
         if (count <= 0) {
@@ -70,21 +73,12 @@ public class ScheduleTask extends TimerTask {
         mcount++;
         try {
 //            logger.error("第:" + mcount + "次发送，发送量" + concurrentHashMap.size());
-            if (concurrentHashMap.size() > 0) {
-                Set<Map.Entry<String, Channel>> entries = concurrentHashMap.entrySet();
+            if (loginChannnelMap.size() > 0) {
+                Set<Map.Entry<String, Channel>> entries = loginChannnelMap.entrySet();
                 for (Map.Entry<String, Channel> entry : entries) {
-                    String channelId = entry.getKey();
-                    String vin = NettyChannelManager.getChannnelVinMap().get(channelId);
                     Channel channel = entry.getValue();
-                    if (channel.isOpen() && channel.isActive()) {
-                        long packetSerialNum = PacketAnalyze.getPacketSerialNum();
-                        PacketAnalyze.sendPacketMap.put(packetSerialNum, System.currentTimeMillis(), ExpirationPolicy.CREATED, packeExpiredTime, TimeUnit.SECONDS);
-                        byte[] realTimePacket = VechileUtils.getPacket(CommandTag.VEHICLE_REGISTER, vin, packetSerialNum);
-                        channel.writeAndFlush(realTimePacket);
-                        String toHexString = ByteUtils.bytesToHexString(realTimePacket);
-                        logger.info("[CHANNEL]" + "[" + channel.id().asShortText() + "][SENDED][NO." + packetSerialNum + "]->" + toHexString);
-                        channel.writeAndFlush(realTimePacket);
-                    }
+                    threadPoolTaskExecutor.execute(new SendDataTask(channel,CommandTag.REALTIME_INFO_REPORT));
+
                 }
             }
         } catch (Exception e) {
@@ -92,7 +86,5 @@ public class ScheduleTask extends TimerTask {
             logger.error("数据发送异常", e);
         }
         count--;
-
-
     }
 }
