@@ -124,7 +124,6 @@ public class ByteUtils {
         bb[7] = (byte) (x >> 0);
         return bb;
     }
-
     /**
      * 通过byte数组取到long
      *
@@ -133,13 +132,13 @@ public class ByteUtils {
      * @return
      */
     public static long getLong(byte[] bb, int index) {
-        return ((((long) bb[0] & 0xff) << 56)
-                | (((long) bb[1] & 0xff) << 48)
-                | (((long) bb[2] & 0xff) << 40)
-                | (((long) bb[3] & 0xff) << 32)
-                | (((long) bb[4] & 0xff) << 24)
-                | (((long) bb[5] & 0xff) << 16)
-                | (((long) bb[6] & 0xff) << 8) | (((long) bb[7] & 0xff) << 0));
+        return ((((long) bb[index + 0] & 0xff) << 56)
+                | (((long) bb[index + 1] & 0xff) << 48)
+                | (((long) bb[index + 2] & 0xff) << 40)
+                | (((long) bb[index + 3] & 0xff) << 32)
+                | (((long) bb[index + 4] & 0xff) << 24)
+                | (((long) bb[index + 5] & 0xff) << 16)
+                | (((long) bb[index + 6] & 0xff) << 8) | (((long) bb[index + 7] & 0xff) << 0));
     }
 
     public static void main(String[] args) {

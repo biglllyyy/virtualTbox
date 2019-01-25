@@ -1,7 +1,6 @@
 package com.fdh.simulator.task;
 
 
-import com.fdh.simulator.NettyChannelManager;
 import com.fdh.simulator.PacketAnalyze;
 import com.fdh.simulator.constant.CommandTag;
 import com.fdh.simulator.utils.ByteUtils;
@@ -26,25 +25,29 @@ public class SendDataTask implements Runnable {
     private Channel channel;
     private CommandTag commandTag;
     private int packeExpiredTime;
+    private String vin;
 
-    public SendDataTask(Channel channel, CommandTag commandTag,int packeExpiredTime) {
+    public SendDataTask(Channel channel, CommandTag commandTag, int packeExpiredTime, String vin) {
         this.channel = channel;
         this.commandTag = commandTag;
         this.packeExpiredTime = packeExpiredTime;
+        this.vin = vin;
     }
 
     @Override
     public void run() {
-        String vin = NettyChannelManager.getChannnelVinMap().get(channel);
         try {
-            long packetSerialNum = PacketAnalyze.getPacketSerialNum();
-            byte[] packet = VechileUtils.getPacket(commandTag, vin, packetSerialNum);
+            long packetSerialNum = 0;
+            String logstr="";
             if (commandTag == CommandTag.REALTIME_INFO_REPORT) {//只统计实时数据上报
+                packetSerialNum = PacketAnalyze.getPacketSerialNum();
                 PacketAnalyze.sendPacketMap.put(packetSerialNum, System.currentTimeMillis(), ExpirationPolicy.CREATED, packeExpiredTime, TimeUnit.SECONDS);
+                logstr = "[NO." + packetSerialNum +"]=>";
             }
+            byte[] packet = VechileUtils.getPacket(commandTag, vin, packetSerialNum);
             channel.writeAndFlush(packet);
             String toHexString = ByteUtils.bytesToHexString(packet);
-            logger.info("[CHANNEL]" + "[" + channel.id().asShortText() + "][SENDED][NO." + packetSerialNum + "]->" + toHexString);
+            logger.info("[车辆]" + "[" + vin + "][SENDED]" + logstr + toHexString);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("发送报文失败,vin:" + vin, e);

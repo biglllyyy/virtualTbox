@@ -4,8 +4,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.fdh.simulator.task.ConnectTask;
 import com.fdh.simulator.utils.VechileUtils;
 import io.netty.channel.Channel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Server端 Channel管理器
@@ -15,7 +18,7 @@ import io.netty.channel.Channel;
  * @since 2017年1月6日
  */
 public class NettyChannelManager {
-
+    private static final Logger logger = LoggerFactory.getLogger(NettyChannelManager.class);
     /**
      * 存放channelId和Vin的对应关系
      */
@@ -35,9 +38,9 @@ public class NettyChannelManager {
      * 连接建立后注册通道
      * @param channel
      */
-    public static void putChannel(Channel channel) {
+    public static void putChannel(Channel channel,String vin) {
         channnelMap.put(channel.id().asLongText(),channel);
-        channnelVinMap.put(channel.id().asLongText(), VechileUtils.getVin());
+        channnelVinMap.put(channel.id().asLongText(),vin);
     }
     public static void removeChannel(Channel channel) {
         String chanelId = channel.id().asLongText();
@@ -51,6 +54,7 @@ public class NettyChannelManager {
      */
     public static void putLoginChannel(Channel channel) {
         loginChanel.put(channel.id().asLongText(), channel);
+        logger.info("当前已经登陆数:"+loginChanel.size());
     }
 
     /**

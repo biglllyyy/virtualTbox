@@ -44,21 +44,10 @@ public class Simulator {
     }
 
     public void connect() {
-        // TODO: 2019/1/22 在每个连接处理还是总的workGroup
-        EventLoopGroup workgroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors()*2);
+        EventLoopGroup workgroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors()*2+1);
         for (int i = 0; i < tcpConnections; i++) {
             new Thread(new ConnectTask(address,port,i,workgroup)).start();
         }
-
-        /**
-         * 处理登陆线程
-         */
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        }).start();
         /**
          * 处理实时报文发送，等待登陆完成立马发送数据
          */

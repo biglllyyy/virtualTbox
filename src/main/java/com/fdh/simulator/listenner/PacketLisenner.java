@@ -26,23 +26,19 @@ public class PacketLisenner implements ExpirationListener<Long, Long> {
     @Override
     public void expired(Long packetSerailNum, Long timestamp) {
         ExpiringMap<Long, Long> sendPacketMap = PacketAnalyze.sendPacketMap;
-//        int expiredCount = PacketAnalyze.expireSendCount.incrementAndGet();
-//        int packetCount = PacketAnalyze.atomicLong.get();
-//        logger.error("sendPacketMap->"+sendPacketMap.size());
-//        logger.info("expiredCount->"+expiredCount+"------packetCount"+packetCount);
         if (sendPacketMap.size() == 0) {
             logger.error("***********************************************************测试完成***********************************************************");
             Simulator.timer.cancel();
             //断开所有的连接不在接收报文
             NettyChannelManager.removeAll();
             ReportUtils.report();
-            ConcurrentHashMap<Long, Integer> receiveMap = PacketAnalyze.receiveMap;
-            Set<Map.Entry<Long, Integer>> entries = receiveMap.entrySet();
-            for (Map.Entry<Long, Integer> entry : entries) {
-                Long key = entry.getKey();
-                Integer value = entry.getValue();
-                logger.error("数据包："+key+"过期了，累计耗时："+value);
-            }
+//            ConcurrentHashMap<Long, Integer> receiveMap = PacketAnalyze.receiveMap;
+//            Set<Map.Entry<Long, Integer>> entries = receiveMap.entrySet();
+//            for (Map.Entry<Long, Integer> entry : entries) {
+//                Long key = entry.getKey();
+//                Integer value = entry.getValue();
+//                logger.error("数据包："+key+"过期了，累计耗时："+value);
+//            }
 
         }
 

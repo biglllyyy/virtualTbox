@@ -46,20 +46,20 @@ public class SimulatorHandler extends ChannelInboundHandlerAdapter {
 //                }
 //            }
 //        }
-        long packetSerail = ByteUtils.getLong(bytes, 24);
         //解析车辆登入是否成功
+        String vin = VechileUtils.parseByte2Vin(bytes);
         if (bytes[2] == 0x01) {//登陆数据
-            String vin = VechileUtils.parseByte2Vin(bytes);
             if (bytes[3] == 0x01) {
-                logger.info("[VIN][" + vin + "][" + "登陆成功]");
                 Channel channel = ctx.channel();
                 NettyChannelManager.putLoginChannel(channel);//保存channel
+                logger.info("[车辆][" + vin + "][登陆成功]" + ByteUtils.bytesToHexString(bytes));
             } else {
-                logger.info("[VIN][" + vin + "][" + "登陆失败]");
                 //移除发登陆使用的连接
                 NettyChannelManager.removeChannel(ctx.channel());
+                logger.info("[车辆][" + vin + "][登陆失败]" + ByteUtils.bytesToHexString(bytes));
             }
         } else if (bytes[2] == 0x02) {//实时数据
+            long packetSerail = ByteUtils.getLong(bytes, 24);
             //解析报文获得报文序列号，计算响应时间
             long receiveTimeMillis = System.currentTimeMillis();
             Long receiveTimeMillis1 = receiveTimeMillis;
@@ -68,8 +68,8 @@ public class SimulatorHandler extends ChannelInboundHandlerAdapter {
                 Integer diff = (int) (receiveTimeMillis1 - sendTimeMillis);
                 PacketAnalyze.receiveMap.put(packetSerail, diff);
             }
+            logger.info("[车辆][" + vin + "][RECE][NO." + packetSerail + "]->" + ByteUtils.bytesToHexString(bytes));
         }
-        logger.info("[CHANNEL]" + "[" + ctx.channel().id().asShortText() + "][RECE][NO." + packetSerail + "]->" + ByteUtils.bytesToHexString(bytes));
 
     }
 
@@ -82,9 +82,10 @@ public class SimulatorHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
-        NettyChannelManager.putChannel(channel);//保存channel
+        String vin = VechileUtils.getVin();
+        NettyChannelManager.putChannel(channel, vin);//保存channel
         //连接一旦建立立即登陆
-        threadPoolTaskExecutor.execute(new SendDataTask(channel, CommandTag.VEHICLE_LOGIN,0));
+        threadPoolTaskExecutor.execute(new SendDataTask(channel, CommandTag.VEHICLE_LOGIN, 0, vin));
     }
 
     @Override

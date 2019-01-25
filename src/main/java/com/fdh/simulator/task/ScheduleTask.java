@@ -32,8 +32,6 @@ public class ScheduleTask extends TimerTask {
      */
     int count = 10;
 
-    int mcount = 0;
-
     /**
      * 每包的过期时间
      */
@@ -57,11 +55,23 @@ public class ScheduleTask extends TimerTask {
         this.packeExpiredTime = packeExpiredTime;
     }
 
+
+    public ThreadPoolTaskExecutor getThreadPoolTaskExecutor() {
+        return threadPoolTaskExecutor;
+    }
+
+    public void setThreadPoolTaskExecutor(ThreadPoolTaskExecutor threadPoolTaskExecutor) {
+        this.threadPoolTaskExecutor = threadPoolTaskExecutor;
+    }
+
     @Override
     public void run() {
 
         ConcurrentHashMap<String, Channel> loginChannnelMap = NettyChannelManager.getLoginChannnelMap();
 
+        /**
+         * 登陆有数据，立即发送数据
+         */
         if (loginChannnelMap.size() == 0) {
             return;
         }
@@ -70,15 +80,14 @@ public class ScheduleTask extends TimerTask {
             logger.info("数据发送完成!");
             return;
         }
-        mcount++;
         try {
-//            logger.error("第:" + mcount + "次发送，发送量" + concurrentHashMap.size());
             if (loginChannnelMap.size() > 0) {
                 Set<Map.Entry<String, Channel>> entries = loginChannnelMap.entrySet();
                 for (Map.Entry<String, Channel> entry : entries) {
+                    String channelId = entry.getKey();
+                    String vin = NettyChannelManager.getChannnelVinMap().get(channelId);
                     Channel channel = entry.getValue();
-                    threadPoolTaskExecutor.execute(new SendDataTask(channel,CommandTag.REALTIME_INFO_REPORT));
-
+                    threadPoolTaskExecutor.execute(new SendDataTask(channel, CommandTag.REALTIME_INFO_REPORT, packeExpiredTime,vin));
                 }
             }
         } catch (Exception e) {
