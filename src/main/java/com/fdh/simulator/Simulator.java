@@ -46,15 +46,9 @@ public class Simulator {
     public void connect() {
         // TODO: 2019/1/22 在每个连接处理还是总的workGroup
         EventLoopGroup workgroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors()*2);
-//        for (int i = 1; i <= tcpConnections; i++) {
-//            taskExecutor.submit(new ConnectTask(address, port, i, workgroup));
-//        }
         for (int i = 0; i < tcpConnections; i++) {
             new Thread(new ConnectTask(address,port,i,workgroup)).start();
         }
-        /***
-         * 适当延时等待连接完成
-         */
         timer = new Timer();
         timer.schedule(timerTask, 0, sendInterval);
     }

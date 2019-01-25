@@ -59,7 +59,7 @@ public class ScheduleTask extends TimerTask {
 
         ConcurrentHashMap<String, Channel> concurrentHashMap = NettyChannelManager.getChannnelMap();
 
-        if(concurrentHashMap.size()==0){
+        if (concurrentHashMap.size() == 0) {
             return;
         }
         if (count <= 0) {
@@ -77,9 +77,9 @@ public class ScheduleTask extends TimerTask {
                     String vin = NettyChannelManager.getChannnelVinMap().get(channelId);
                     Channel channel = entry.getValue();
                     if (channel.isOpen() && channel.isActive()) {
-                        int packetSerialNum = PacketAnalyze.getPacketSerialNum();
+                        long packetSerialNum = PacketAnalyze.getPacketSerialNum();
                         PacketAnalyze.sendPacketMap.put(packetSerialNum, System.currentTimeMillis(), ExpirationPolicy.CREATED, packeExpiredTime, TimeUnit.SECONDS);
-                        byte[] realTimePacket = VechileUtils.getPacket(CommandTag.REALTIME_INFO_REPORT,vin, packetSerialNum);
+                        byte[] realTimePacket = VechileUtils.getPacket(CommandTag.VEHICLE_REGISTER, vin, packetSerialNum);
                         channel.writeAndFlush(realTimePacket);
                         String toHexString = ByteUtils.bytesToHexString(realTimePacket);
                         logger.info("[CHANNEL]" + "[" + channel.id().asShortText() + "][SENDED][NO." + packetSerialNum + "]->" + toHexString);
@@ -89,7 +89,7 @@ public class ScheduleTask extends TimerTask {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error("数据发送异常",e);
+            logger.error("数据发送异常", e);
         }
         count--;
 

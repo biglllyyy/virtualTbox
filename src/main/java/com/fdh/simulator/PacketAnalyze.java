@@ -8,13 +8,14 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /***
  * 数据包性能统计
  */
 public class PacketAnalyze {
 
-    public static AtomicInteger atomicLong = new AtomicInteger(0);
+    public static AtomicLong atomicLong = new AtomicLong(0);
 
     /**
      * 已发送数据包过期的个数
@@ -25,7 +26,7 @@ public class PacketAnalyze {
      * key packetserialNum
      * value send packet timestamp
      */
-    public static ExpiringMap<Integer, Long> sendPacketMap = ExpiringMap.builder()
+    public static ExpiringMap<Long, Long> sendPacketMap = ExpiringMap.builder()
             .variableExpiration()
             .expirationListener(new PacketLisenner())
             .build();
@@ -36,9 +37,9 @@ public class PacketAnalyze {
      * key packetserialNum
      * value send and recevie time
      */
-    public static ConcurrentHashMap<Integer, Integer> receiveMap = new ConcurrentHashMap<Integer, Integer>();
+    public static ConcurrentHashMap<Long, Integer> receiveMap = new ConcurrentHashMap<Long, Integer>();
 
-    public static int getPacketSerialNum() {
+    public static long getPacketSerialNum() {
         return atomicLong.incrementAndGet();
     }
 
@@ -118,16 +119,16 @@ public class PacketAnalyze {
 //        System.out.println(max);
 //        System.out.println(min);
 //        System.out.println(currentTimeMillis1 - currentTimeMillis);
-
-        for (int i = 0; i < 10; i++) {
-            sendPacketMap.put(i, (long) i,1, TimeUnit.SECONDS);
-        }
-
-
-        for (int i = 0; i < 1000000; i++) {
-
-            Thread.sleep(1000);
-        }
+//
+//        for (int i = 0; i < 10; i++) {
+//            sendPacketMap.put(i, (long) i,1, TimeUnit.SECONDS);
+//        }
+//
+//
+//        for (int i = 0; i < 1000000; i++) {
+//
+//            Thread.sleep(1000);
+//        }
 
     }
 }

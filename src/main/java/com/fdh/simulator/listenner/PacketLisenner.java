@@ -19,13 +19,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2019/1/22 11:48
  * @Description: 发送的数据包过期策略
  */
-public class PacketLisenner implements ExpirationListener<Integer, Long> {
+public class PacketLisenner implements ExpirationListener<Long, Long> {
 
     private static final Logger logger = LoggerFactory.getLogger(PacketLisenner.class);
 
     @Override
-    public void expired(Integer packetSerailNum, Long timestamp) {
-        ExpiringMap<Integer, Long> sendPacketMap = PacketAnalyze.sendPacketMap;
+    public void expired(Long packetSerailNum, Long timestamp) {
+        ExpiringMap<Long, Long> sendPacketMap = PacketAnalyze.sendPacketMap;
 //        int expiredCount = PacketAnalyze.expireSendCount.incrementAndGet();
 //        int packetCount = PacketAnalyze.atomicLong.get();
 //        logger.error("sendPacketMap->"+sendPacketMap.size());
@@ -36,10 +36,10 @@ public class PacketLisenner implements ExpirationListener<Integer, Long> {
             //断开所有的连接不在接收报文
             NettyChannelManager.removeAll();
             ReportUtils.report();
-            ConcurrentHashMap<Integer, Integer> receiveMap = PacketAnalyze.receiveMap;
-            Set<Map.Entry<Integer, Integer>> entries = receiveMap.entrySet();
-            for (Map.Entry<Integer, Integer> entry : entries) {
-                Integer key = entry.getKey();
+            ConcurrentHashMap<Long, Integer> receiveMap = PacketAnalyze.receiveMap;
+            Set<Map.Entry<Long, Integer>> entries = receiveMap.entrySet();
+            for (Map.Entry<Long, Integer> entry : entries) {
+                Long key = entry.getKey();
                 Integer value = entry.getValue();
                 logger.error("数据包："+key+"过期了，累计耗时："+value);
             }

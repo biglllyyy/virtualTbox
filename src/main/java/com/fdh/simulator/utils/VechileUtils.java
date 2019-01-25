@@ -19,6 +19,15 @@ public class VechileUtils {
 
     public static AtomicInteger suffix = new AtomicInteger(PropertiesUtils.getIntegerProperty("client.vin.suffix"));
 
+    /***
+     * iccid的后缀
+     */
+    public static AtomicInteger iccidSuffix = new AtomicInteger(100000);
+
+    /**
+     * 终端序列号，7位
+     */
+    public  static  AtomicInteger terminalSerialNo = new AtomicInteger(6000000);
 
     private static byte[] vechileData;
 
@@ -45,18 +54,22 @@ public class VechileUtils {
      * @param packetSerialNum
      * @return
      */
-    public static byte[] getPacket(CommandTag commandTag, String vin, int packetSerialNum) {
+    public static byte[] getPacket(CommandTag commandTag, String vin, long packetSerialNum) {
 
         byte[] fixPrefixPacket;
-        byte[] packetSerialNo = ByteUtils.getIntegerByte(packetSerialNum);
+        //数据包序号，8个字节，实际业务数据是数据采集时间和终端流水号
+        byte[] packetSerialNo = ByteUtils.putLong(packetSerialNum);
         byte[] middle;
         if (commandTag == CommandTag.REALTIME_INFO_REPORT) {
             count = 400;
             //实时数据处理在包序号后面追假的实时数据
-        } else {
+        } else if(commandTag == CommandTag.HEARTBEAT) {
             count = 0;
+        } else if(commandTag==CommandTag.VEHICLE_REGISTER){
+            vechileData = geRegisterData(vin);
+            count = vechileData.length;
         }
-        fixPrefixPacket = fixPrefixPacket(commandTag, vin, (short) (4 + count));
+        fixPrefixPacket = fixPrefixPacket(commandTag, vin, (short) (packetSerialNo.length + count));
         middle = new byte[fixPrefixPacket.length + packetSerialNo.length + count];
         System.arraycopy(fixPrefixPacket, 0, middle, 0, fixPrefixPacket.length);
         System.arraycopy(packetSerialNo, 0, middle, fixPrefixPacket.length, packetSerialNo.length);
@@ -71,6 +84,22 @@ public class VechileUtils {
         return ret;
     }
 
+    public static byte[] geRegisterData(String vin) {
+        byte[] registerbyte=new byte[17+20+1+7];//17位vin,20位iccid,终端序列号长度1位，7位终端序列号
+        byte[] vinBytes = vin.getBytes();
+        System.arraycopy(vinBytes,0,registerbyte,0,vinBytes.length);//vin
+        String iccidPrefix = "898602B4071630";
+        int incrementAndGet = iccidSuffix.incrementAndGet();
+        iccidPrefix += incrementAndGet;
+        byte[] iccid = iccidPrefix.getBytes();
+        String serialNo = terminalSerialNo.incrementAndGet()+"";
+        byte[] serialNoBytes = serialNo.getBytes();
+
+        System.arraycopy(iccid,0,registerbyte,vinBytes.length,iccid.length);
+        registerbyte[vinBytes.length+iccid.length] = 0x07;
+        System.arraycopy(serialNoBytes,0,registerbyte,vinBytes.length+iccid.length+1,serialNoBytes.length);
+        return registerbyte;
+    }
 
     /**
      * 生成报文头
@@ -106,6 +135,22 @@ public class VechileUtils {
     public static String getVin() {
         int incrementAndGet = suffix.incrementAndGet();
         return prefix + incrementAndGet;
+    }
+
+    /**
+     * 从原始报文中解析出Vin
+     * @param receives
+     * @return
+     */
+    public static String parseByte2Vin(byte[] receives) {
+
+        if (receives == null || receives.length <= 15) {
+            return null;
+        } else {
+            byte[] vinBytes = new byte[17];
+            System.arraycopy(receives, 4, vinBytes, 0, 17);
+            return new String(vinBytes);
+        }
     }
 
 
@@ -146,9 +191,11 @@ public class VechileUtils {
 //        byte[] bytes = fixPrefixPacket(CommandTag.HEARTBEAT, vin, (short) 4);
 //        byte[] timingPacket = getTimingPacket(getVin(), 1);
 //        String vin1 = getVin();
-        byte[] timingPacket = getPacket(CommandTag.REALTIME_INFO_REPORT,vin, 1);
-        System.out.println(ByteUtils.bytesToHexString(timingPacket));
-
+//        byte[] timingPacket = getPacket(CommandTag.REALTIME_INFO_REPORT, vin, 1);
+//        System.out.println(ByteUtils.bytesToHexString(timingPacket));
+//        vechileData = geRegisterData(vin);
+        byte[] packet = getPacket(CommandTag.VEHICLE_REGISTER, vin, 1L);
+        System.out.println(ByteUtils.bytesToHexString(packet));
     }
 
 }
