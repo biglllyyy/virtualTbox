@@ -41,6 +41,31 @@ public class ByteUtils {
         return stringBuilder.toString().toUpperCase();
     }
 
+
+
+    /**
+     * 转换short为byte
+     *
+     * @param dst
+     * @param src 需要转换的short
+     * @param index
+     */
+    public static void putShort(byte[] dst, short src, int index) {
+        dst[index] = (byte) (src >> 8);
+        dst[index + 1] = (byte) (src >> 0);
+    }
+
+    /**
+     * 通过byte数组取到short
+     *
+     * @param b
+     * @param index 第几位开始取
+     * @return
+     */
+    public static short getShort(byte[] b, int index) {
+        return (short) (((b[index + 0] << 8) | b[index + 1] & 0xff));
+    }
+
     /**
      * 转换int为byte数组
      *
@@ -117,9 +142,10 @@ public class ByteUtils {
     }
 
     public static void main(String[] args) {
-        byte[] aa = {0x23, 0x23, 0x07, (byte) 0xFE, 0x4C, 0x4E, 0x42, 0x53, 0x43, 0x42, 0x33, 0x46, 0x58, 0x59, 0x5A, 0x31, 0x30, 0x30, 0x30, 0x30, 0x31, 0x01, 0x00, 0x04, 0x00, 0x00, 0x00, 0x02, (byte) 0xC2};
-        int bb = getInt(aa, 24);
-        System.out.println(bb);
+//        byte[] aa = {0x23, 0x23, 0x07, (byte) 0xFE, 0x4C, 0x4E, 0x42, 0x53, 0x43, 0x42, 0x33, 0x46, 0x58, 0x59, 0x5A, 0x31, 0x30, 0x30, 0x30, 0x30, 0x31, 0x01, 0x00, 0x04, 0x00, 0x00, 0x00, 0x02, (byte) 0xC2};
+//        int bb = getInt(aa, 24);
+        byte[] bytes = putLong(System.currentTimeMillis());
+        System.out.println(ByteUtils.bytesToHexString(bytes));
 
     }
 }

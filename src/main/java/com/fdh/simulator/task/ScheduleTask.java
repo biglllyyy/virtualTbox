@@ -4,6 +4,7 @@ package com.fdh.simulator.task;
 import com.fdh.simulator.NettyChannelManager;
 import com.fdh.simulator.PacketAnalyze;
 import com.fdh.simulator.Simulator;
+import com.fdh.simulator.constant.CommandTag;
 import com.fdh.simulator.utils.ByteUtils;
 import com.fdh.simulator.utils.VechileUtils;
 import io.netty.channel.Channel;
@@ -78,7 +79,7 @@ public class ScheduleTask extends TimerTask {
                     if (channel.isOpen() && channel.isActive()) {
                         int packetSerialNum = PacketAnalyze.getPacketSerialNum();
                         PacketAnalyze.sendPacketMap.put(packetSerialNum, System.currentTimeMillis(), ExpirationPolicy.CREATED, packeExpiredTime, TimeUnit.SECONDS);
-                        byte[] realTimePacket = VechileUtils.getTimingPacket(vin, packetSerialNum);
+                        byte[] realTimePacket = VechileUtils.getPacket(CommandTag.REALTIME_INFO_REPORT,vin, packetSerialNum);
                         channel.writeAndFlush(realTimePacket);
                         String toHexString = ByteUtils.bytesToHexString(realTimePacket);
                         logger.info("[CHANNEL]" + "[" + channel.id().asShortText() + "][SENDED][NO." + packetSerialNum + "]->" + toHexString);
@@ -88,7 +89,7 @@ public class ScheduleTask extends TimerTask {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error("数据发送异常");
+            logger.error("数据发送异常",e);
         }
         count--;
 
