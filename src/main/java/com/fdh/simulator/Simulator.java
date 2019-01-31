@@ -2,16 +2,21 @@ package com.fdh.simulator;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import com.fdh.simulator.model.Tbox;
 import com.fdh.simulator.task.ScheduleTask;
+import com.fdh.simulator.utils.ExcelUtils;
 import com.fdh.simulator.utils.PropertiesUtils;
 import com.fdh.simulator.utils.SpringContextUtils;
 import com.fdh.simulator.task.ConnectTask;
+import com.fdh.simulator.utils.VechileUtils;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 
@@ -38,12 +43,15 @@ public class Simulator {
 
     private static final Logger logger = LoggerFactory.getLogger(Simulator.class);
 
+
     public Simulator() {
 //        taskExecutor = SpringContextUtils.getBean("taskExecutor");
 //        connect(address, port);
     }
 
     public void connect() {
+        tcpConnections = VechileUtils.mlist.size();
+        logger.info("tcpConnections:"+tcpConnections);
         EventLoopGroup workgroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors()*2+1);
         for (int i = 0; i < tcpConnections; i++) {
             new Thread(new ConnectTask(address,port,i,workgroup)).start();

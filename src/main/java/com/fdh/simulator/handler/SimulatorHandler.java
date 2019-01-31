@@ -34,20 +34,22 @@ public class SimulatorHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
         byte[] bytes = (byte[]) msg;
-
-        //解析注册是否成功
-//        if (bytes != null && bytes.length > 15) {
-//            if ((bytes[2]+256) == 0xDC) {
-//                String vin = VechileUtils.parseByte2Vin(bytes);
-//                if (bytes[3] == 0x01) {
-//                    logger.info("[VIN][" + vin + "][" + "注册成功]");
-//                } else {
-//                    logger.info("[VIN][" + vin + "][" + "注册失败]");
-//                }
-//            }
-//        }
-        //解析车辆登入是否成功
         String vin = VechileUtils.parseByte2Vin(bytes);
+        //解析注册是否成功
+        if (bytes != null && bytes.length > 15) {
+            if ((bytes[2] + 256) == 0xDC) {
+                if (bytes[3] == 0x01) {
+                    logger.info("[车辆][VIN][" + vin + "][" + "注册成功]");
+                    int incrementAndGet = VechileUtils.mcounn.incrementAndGet();
+                    if(incrementAndGet==VechileUtils.mlist.size()){
+                        logger.info("共"+incrementAndGet+"注册完成");
+                    }
+                } else {
+                    logger.info("[车辆][VIN][" + vin + "][" + "注册失败]");
+                }
+            }
+        }
+        //解析车辆登入是否成功
         if (bytes[2] == 0x01) {//登陆数据
             if (bytes[3] == 0x01) {
                 Channel channel = ctx.channel();
@@ -85,6 +87,7 @@ public class SimulatorHandler extends ChannelInboundHandlerAdapter {
         String vin = VechileUtils.getVin();
         NettyChannelManager.putChannel(channel, vin);//保存channel
         //连接一旦建立立即登陆
+//        threadPoolTaskExecutor.execute(new SendDataTask(channel, CommandTag.VEHICLE_REGISTER, 0, vin));
         threadPoolTaskExecutor.execute(new SendDataTask(channel, CommandTag.VEHICLE_LOGIN, 0, vin));
     }
 

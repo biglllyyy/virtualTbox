@@ -2,7 +2,9 @@ package com.fdh.simulator.task;
 
 
 import com.fdh.simulator.PacketAnalyze;
+import com.fdh.simulator.Simulator;
 import com.fdh.simulator.constant.CommandTag;
+import com.fdh.simulator.model.Tbox;
 import com.fdh.simulator.utils.ByteUtils;
 import com.fdh.simulator.utils.VechileUtils;
 import io.netty.channel.Channel;
@@ -38,16 +40,23 @@ public class SendDataTask implements Runnable {
     public void run() {
         try {
             long packetSerialNum = 0;
-            String logstr="";
+            byte[] packet = new byte[0];
+            String logstr = "";
             if (commandTag == CommandTag.REALTIME_INFO_REPORT) {//只统计实时数据上报
                 packetSerialNum = PacketAnalyze.getPacketSerialNum();
                 PacketAnalyze.sendPacketMap.put(packetSerialNum, System.currentTimeMillis(), ExpirationPolicy.CREATED, packeExpiredTime, TimeUnit.SECONDS);
-                logstr = "[NO." + packetSerialNum +"]=>";
+                logstr = "[NO." + packetSerialNum + "]=>";
+                packet = VechileUtils.getPacket(commandTag, vin, packetSerialNum, null, null);
+            } else if (commandTag == CommandTag.VEHICLE_REGISTER) {
+//                packetSerialNum = PacketAnalyze.getPacketSerialNum();
+//                PacketAnalyze.sendPacketMap.put(packetSerialNum, System.currentTimeMillis(), ExpirationPolicy.CREATED, packeExpiredTime, TimeUnit.SECONDS);
+                logstr = "[NO." + packetSerialNum + "]=>";
+                Tbox tbox = VechileUtils.getTbox();
+                packet = VechileUtils.getPacket(commandTag, tbox.getVin(), packetSerialNum, tbox.getIccid(), tbox.getDeviceId());
+                String toHexString = ByteUtils.bytesToHexString(packet);
+                logger.info("[车辆]" + "[" + tbox.getVin() + "][SENDED]" + logstr + toHexString);
             }
-            byte[] packet = VechileUtils.getPacket(commandTag, vin, packetSerialNum);
             channel.writeAndFlush(packet);
-            String toHexString = ByteUtils.bytesToHexString(packet);
-            logger.info("[车辆]" + "[" + vin + "][SENDED]" + logstr + toHexString);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("发送报文失败,vin:" + vin, e);
