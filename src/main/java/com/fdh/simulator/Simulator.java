@@ -34,7 +34,8 @@ public class Simulator {
     private int port;
     private int sendInterval;
     private int tcpConnections;
-    private TimerTask  timerTask;
+    private TimerTask timerTask;
+    private int suffix;
 
     /**
      * 存储channelId和vin对应关系的map
@@ -50,11 +51,25 @@ public class Simulator {
     }
 
     public void connect() {
-        tcpConnections = VechileUtils.mlist.size();
-        logger.info("tcpConnections:"+tcpConnections);
-        EventLoopGroup workgroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors()*2+1);
+
+        //初始化vin
+
+//        tcpConnections = VechileUtils.mlist.size();
+        VechileUtils.intSuffix = this.getSuffix();
+        VechileUtils.suffix = new AtomicInteger(VechileUtils.intSuffix);
+        logger.info("tcpConnections:" + tcpConnections);
         for (int i = 0; i < tcpConnections; i++) {
-            new Thread(new ConnectTask(address,port,i,workgroup)).start();
+            VechileUtils.vinMap.put(i, VechileUtils.getVin());
+        }
+
+        EventLoopGroup workgroup = new NioEventLoopGroup(60);
+        for (int i = 0; i < tcpConnections; i++) {
+            new Thread(new ConnectTask(address, port, i, workgroup)).start();
+//            try {
+//                Thread.sleep(10);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
         }
         /**
          * 处理实时报文发送，等待登陆完成立马发送数据
@@ -117,5 +132,13 @@ public class Simulator {
 
     public void setTcpConnections(int tcpConnections) {
         this.tcpConnections = tcpConnections;
+    }
+
+    public int getSuffix() {
+        return suffix;
+    }
+
+    public void setSuffix(int suffix) {
+        this.suffix = suffix;
     }
 }

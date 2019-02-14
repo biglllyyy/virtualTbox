@@ -27,6 +27,9 @@ public class ScheduleTask extends TimerTask {
 
     private static final Logger logger = LoggerFactory.getLogger(ScheduleTask.class);
 
+
+    private int tcpConnections;
+
     /**
      * 执行调度的次数
      */
@@ -36,6 +39,8 @@ public class ScheduleTask extends TimerTask {
      * 每包的过期时间
      */
     int packeExpiredTime = 10;
+    int mcount;
+
 
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
@@ -64,6 +69,14 @@ public class ScheduleTask extends TimerTask {
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
     }
 
+    public int getTcpConnections() {
+        return tcpConnections;
+    }
+
+    public void setTcpConnections(int tcpConnections) {
+        this.tcpConnections = tcpConnections;
+    }
+
     @Override
     public void run() {
 
@@ -72,9 +85,15 @@ public class ScheduleTask extends TimerTask {
         /**
          * 登陆有数据，立即发送数据
          */
-        if (loginChannnelMap.size() == 0) {
+        int i = loginChannnelMap.size() * 100 / tcpConnections;
+        if (i < 90) {
             return;
         }
+//        if (loginChannnelMap.size() <=0) {
+//            return;
+//        }
+        mcount++;
+        logger.info("第" + mcount + "数据发送");
         if (count <= 0) {
             Simulator.timer.cancel();
             logger.info("数据发送完成!");
@@ -84,10 +103,8 @@ public class ScheduleTask extends TimerTask {
             if (loginChannnelMap.size() > 0) {
                 Set<Map.Entry<String, Channel>> entries = loginChannnelMap.entrySet();
                 for (Map.Entry<String, Channel> entry : entries) {
-                    String channelId = entry.getKey();
-                    String vin = NettyChannelManager.getChannnelVinMap().get(channelId);
                     Channel channel = entry.getValue();
-                    threadPoolTaskExecutor.execute(new SendDataTask(channel, CommandTag.REALTIME_INFO_REPORT, packeExpiredTime,vin));
+                    threadPoolTaskExecutor.execute(new SendDataTask(channel, CommandTag.REALTIME_INFO_REPORT, packeExpiredTime));
                 }
             }
         } catch (Exception e) {
@@ -95,5 +112,6 @@ public class ScheduleTask extends TimerTask {
             logger.error("数据发送异常", e);
         }
         count--;
+        VechileUtils.sendCount = count;
     }
 }

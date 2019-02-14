@@ -54,6 +54,7 @@ public class NettyChannelManager {
      */
     public static void putLoginChannel(Channel channel) {
         loginChanel.put(channel.id().asLongText(), channel);
+        channnelMap.remove(channel.id().asLongText());
         logger.info("当前已经登陆数:"+loginChanel.size());
     }
 
@@ -67,13 +68,16 @@ public class NettyChannelManager {
 
     public  static  void removeAll(){
 
-        Set<Map.Entry<String, Channel>> entries = channnelMap.entrySet();
+        Set<Map.Entry<String, Channel>> entries = loginChanel.entrySet();
         for (Map.Entry<String, Channel> entry : entries) {
             Channel channel = entry.getValue();
             channel.close();
         }
     }
 
+    public  static  String getVin(Channel channel){
+        return channnelVinMap.get(channel.id().asLongText());
+    }
 
     public static long getActiveChannelSize() {
         return channnelMap.size();

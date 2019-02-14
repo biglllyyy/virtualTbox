@@ -15,11 +15,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class SimulatorHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(Simulator.class);
 
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    private Simulator simulator;
+
+    private AtomicInteger atomicInteger = new AtomicInteger(0);
 
     /**
      * 连接数
@@ -28,6 +33,7 @@ public class SimulatorHandler extends ChannelInboundHandlerAdapter {
 
     public SimulatorHandler() {
         threadPoolTaskExecutor = SpringContextUtils.getBean("taskExecutor");
+        simulator = SpringContextUtils.getBean("simulator");
     }
 
     @Override
@@ -41,8 +47,8 @@ public class SimulatorHandler extends ChannelInboundHandlerAdapter {
                 if (bytes[3] == 0x01) {
                     logger.info("[车辆][VIN][" + vin + "][" + "注册成功]");
                     int incrementAndGet = VechileUtils.mcounn.incrementAndGet();
-                    if(incrementAndGet==VechileUtils.mlist.size()){
-                        logger.info("共"+incrementAndGet+"注册完成");
+                    if (incrementAndGet == simulator.getTcpConnections()) {
+                        logger.info("共" + incrementAndGet + "注册完成");
                     }
                 } else {
                     logger.info("[车辆][VIN][" + vin + "][" + "注册失败]");
@@ -83,16 +89,24 @@ public class SimulatorHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        Channel channel = ctx.channel();
-        String vin = VechileUtils.getVin();
-        NettyChannelManager.putChannel(channel, vin);//保存channel
-        //连接一旦建立立即登陆
-//        threadPoolTaskExecutor.execute(new SendDataTask(channel, CommandTag.VEHICLE_REGISTER, 0, vin));
-        threadPoolTaskExecutor.execute(new SendDataTask(channel, CommandTag.VEHICLE_LOGIN, 0, vin));
+        synchronized (SimulatorHandler.class) {
+            Channel channel = ctx.channel();
+            int i = VechileUtils.connectCounn.intValue();
+            String vin = VechileUtils.vinMap.get(i);
+//            logger.info("连接数：" + i);
+//            logger.info("vin：" + vin);
+            VechileUtils.connectCounn.incrementAndGet();
+            NettyChannelManager.putChannel(channel, vin);//保存建立连接的channel
+            //连接一旦建立立即登陆
+//            threadPoolTaskExecutor.execute(new SendDataTask(channel, CommandTag.VEHICLE_REGISTER, 0));
+            threadPoolTaskExecutor.execute(new SendDataTask(channel, CommandTag.VEHICLE_LOGIN, 0));
+        }
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        String vin = NettyChannelManager.getVin(ctx.channel());
+//        logger.info("[车辆]["+vin+"["+"断开]");
         NettyChannelManager.removeChannel(ctx.channel());
     }
 }

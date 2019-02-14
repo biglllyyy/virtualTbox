@@ -1,6 +1,7 @@
 package com.fdh.simulator.task;
 
 
+import com.fdh.simulator.NettyChannelManager;
 import com.fdh.simulator.PacketAnalyze;
 import com.fdh.simulator.Simulator;
 import com.fdh.simulator.constant.CommandTag;
@@ -29,11 +30,10 @@ public class SendDataTask implements Runnable {
     private int packeExpiredTime;
     private String vin;
 
-    public SendDataTask(Channel channel, CommandTag commandTag, int packeExpiredTime, String vin) {
+    public SendDataTask(Channel channel, CommandTag commandTag, int packeExpiredTime) {
         this.channel = channel;
         this.commandTag = commandTag;
         this.packeExpiredTime = packeExpiredTime;
-        this.vin = vin;
     }
 
     @Override
@@ -42,19 +42,27 @@ public class SendDataTask implements Runnable {
             long packetSerialNum = 0;
             byte[] packet = new byte[0];
             String logstr = "";
+            vin = NettyChannelManager.getVin(channel);
             if (commandTag == CommandTag.REALTIME_INFO_REPORT) {//只统计实时数据上报
                 packetSerialNum = PacketAnalyze.getPacketSerialNum();
                 PacketAnalyze.sendPacketMap.put(packetSerialNum, System.currentTimeMillis(), ExpirationPolicy.CREATED, packeExpiredTime, TimeUnit.SECONDS);
                 logstr = "[NO." + packetSerialNum + "]=>";
                 packet = VechileUtils.getPacket(commandTag, vin, packetSerialNum, null, null);
+                String toHexString = ByteUtils.bytesToHexString(packet);
+//                logger.info("[车辆]" + "[" + vin + "][SENDED]" + logstr + toHexString);
             } else if (commandTag == CommandTag.VEHICLE_REGISTER) {
 //                packetSerialNum = PacketAnalyze.getPacketSerialNum();
 //                PacketAnalyze.sendPacketMap.put(packetSerialNum, System.currentTimeMillis(), ExpirationPolicy.CREATED, packeExpiredTime, TimeUnit.SECONDS);
                 logstr = "[NO." + packetSerialNum + "]=>";
-                Tbox tbox = VechileUtils.getTbox();
-                packet = VechileUtils.getPacket(commandTag, tbox.getVin(), packetSerialNum, tbox.getIccid(), tbox.getDeviceId());
+//                Tbox tbox = VechileUtils.getTbox();
+//                packet = VechileUtils.getPacket(commandTag, tbox.getVin(), packetSerialNum, tbox.getIccid(), tbox.getDeviceId());
+                packet = VechileUtils.getPacket(commandTag, vin, packetSerialNum, null, null);
                 String toHexString = ByteUtils.bytesToHexString(packet);
-                logger.info("[车辆]" + "[" + tbox.getVin() + "][SENDED]" + logstr + toHexString);
+                logger.info("[车辆]" + "[" + vin + "][SENDED]" + logstr + toHexString);
+            } else if (commandTag == CommandTag.VEHICLE_LOGIN) {
+                packet = VechileUtils.getPacket(commandTag, vin, packetSerialNum, null, null);
+                String toHexString = ByteUtils.bytesToHexString(packet);
+                logger.info("[车辆]" + "[" + vin + "][SENDED]" + logstr + toHexString);
             }
             channel.writeAndFlush(packet);
         } catch (Exception e) {

@@ -35,11 +35,13 @@
     <bean id="timerTask" class="com.fdh.simulator.task.ScheduleTask" lazy-init="false">
         <property name="count" value="${client.send.count}"/>
         <property name="packeExpiredTime" value="${client.receive.expired.time}"/>
+        <property name="tcpConnections" value="${client.tcp.connections}"/>
         <property name="threadPoolTaskExecutor" ref="taskExecutor"/>
     </bean>
 
     <bean id="simulator" class="com.fdh.simulator.Simulator" lazy-init="false">
         <property name="address" value="${client.serverip}"/>
+        <property name="suffix" value="${client.vin.suffix}"/>
         <property name="port" value="${client.serverport}"/>
         <property name="sendInterval" value="${client.send.interval}"/>
         <property name="tcpConnections" value="${client.tcp.connections}"/>

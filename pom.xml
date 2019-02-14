@@ -110,22 +110,33 @@
             <!-- 先指定 src/main/resources下所有文件及文件夹为资源文件 -->
             <resource>
                 <directory>src/main/resources</directory>
-                <targetPath>${project.build.directory}/classes</targetPath>
+                <!--<targetPath>${project.build.directory}/classes</targetPath>-->
                 <excludes>
-                    <exclude>config/**/*.propertites</exclude>
+                    <exclude>/**/config.properties</exclude>
                 </excludes>
                 <filtering>true</filtering>
             </resource>
-            <!-- 根据env部署环境值，把对应环境的配置文件拷贝到classes目录 -->
+             <!--根据env部署环境值，把对应环境的配置文件拷贝到classes目录-->
             <resource>
-                <directory>src/main/resources/config/</directory>
-                <targetPath>${project.build.directory}/classes</targetPath>
-                <filtering>true</filtering>
+            <directory>src/main/resources/config/</directory>
+            <targetPath>${project.build.directory}/classes</targetPath>
+            <filtering>true</filtering>
             </resource>
         </resources>
 
         <plugins>
 
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-compiler-plugin</artifactId>-->
+                <!--<version>2.4</version>-->
+                <!--<configuration>-->
+                    <!--<excludes>-->
+                        <!--&lt;!&ndash;注意这玩意从编译结果目录开始算目录结构&ndash;&gt;-->
+                        <!--<exclude>/**/*.properties</exclude>-->
+                    <!--</excludes>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
             <!-- The configuration of maven-assembly-plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -173,7 +184,7 @@
                     <configurationSourceDirectory>src/main/resources/config</configurationSourceDirectory>
 
                     <!-- set alternative assemble directory -->
-                    <assembleDirectory>${project.build.directory}/fdh-assemble</assembleDirectory>
+                    <assembleDirectory>${project.build.directory}/TBOX-assemble</assembleDirectory>
                     <!-- Extra JVM arguments that will be included in the bin scripts -->
                     <extraJvmArguments>-Xms128m</extraJvmArguments>
                     <binFileExtensions>

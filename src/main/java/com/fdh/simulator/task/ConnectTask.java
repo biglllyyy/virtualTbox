@@ -47,7 +47,7 @@ public class ConnectTask implements Runnable {
         // 接收缓冲区,最小32直接，初始是1500字节，最大65535字节
         bootstrap.option(ChannelOption.RCVBUF_ALLOCATOR, new AdaptiveRecvByteBufAllocator(32, 1500, 65536));
         bootstrap.option(ChannelOption.TCP_NODELAY, true);
-        bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,5000);
+        bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,15000);
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
 
             @Override
@@ -77,6 +77,8 @@ public class ConnectTask implements Runnable {
 
             e.printStackTrace();
             logger.error("连接失败!" ,e);
+        }catch (Exception e){
+            logger.error("连接或关闭出现异常" ,e);
         }
     }
 

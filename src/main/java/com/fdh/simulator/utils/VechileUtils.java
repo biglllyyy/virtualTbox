@@ -5,6 +5,7 @@ import com.fdh.simulator.constant.CommandTag;
 import com.fdh.simulator.model.Tbox;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -18,20 +19,26 @@ public class VechileUtils {
 
     public static String prefix = "LNBSCB3FXYZ";
 
-    public static AtomicInteger suffix = new AtomicInteger(PropertiesUtils.getIntegerProperty("client.vin.suffix"));
+    public static int intSuffix ;
+    public static volatile AtomicInteger suffix;
 
-    public static List<Tbox> mlist = ExcelUtils.getTBoxDataFromExcel();
-    public  static AtomicInteger index = new AtomicInteger(0);
-    public  static AtomicInteger mcounn = new AtomicInteger(0);
+//    public static List<Tbox> mlist = ExcelUtils.getTBoxDataFromExcel();
+    public static AtomicInteger index = new AtomicInteger(0);
+    public static AtomicInteger mcounn = new AtomicInteger(0);
+    public static AtomicInteger connectCounn = new AtomicInteger(0);
+
+    public  static  Integer sendCount = 0;
+
+    public static ConcurrentHashMap<Integer, String> vinMap = new ConcurrentHashMap<>();
     /***
      * iccid的后缀
      */
-    public static AtomicInteger iccidSuffix = new AtomicInteger(100000);
+    public static AtomicInteger iccidSuffix = suffix;
 
     /**
      * 终端序列号，7位
      */
-    public static AtomicInteger terminalSerialNo = new AtomicInteger(6000000);
+    public static AtomicInteger terminalSerialNo = new AtomicInteger(7000000 + intSuffix);
 
     private static byte[] vechileData;
 
@@ -52,15 +59,14 @@ public class VechileUtils {
     }
 
     /**
-     *
      * @param commandTag
      * @param vin
      * @param packetSerialNum
-     * @param iccid 注册报文必填
-     * @param deviceid 注册报文必填
+     * @param iccid           注册报文必填
+     * @param deviceid        注册报文必填
      * @return
      */
-    public static byte[] getPacket(CommandTag commandTag, String vin, long packetSerialNum,String iccid,String deviceid) {
+    public static byte[] getPacket(CommandTag commandTag, String vin, long packetSerialNum, String iccid, String deviceid) {
 
         byte[] fixPrefixPacket;
         //数据包序号，8个字节，实际业务数据是数据采集时间和终端流水号
@@ -73,8 +79,8 @@ public class VechileUtils {
             count = 0;
             packetSerialNo = new byte[0];
         } else if (commandTag == CommandTag.VEHICLE_REGISTER) {
-//            vechileData = geRegisterData(vin);
-            vechileData = geRegisterData(vin,iccid,deviceid);
+            vechileData = geRegisterData(vin);
+//            vechileData = geRegisterData(vin,iccid,deviceid);
             count = vechileData.length;
         }
         fixPrefixPacket = fixPrefixPacket(commandTag, vin, (short) (packetSerialNo.length + count));
@@ -122,11 +128,11 @@ public class VechileUtils {
     }
 
 
-    public  static Tbox getTbox(){
-        Tbox tbox = mlist.get(index.get());
-        index.incrementAndGet();
-        return  tbox;
-    }
+//    public static Tbox getTbox() {
+//        Tbox tbox = mlist.get(index.get());
+//        index.incrementAndGet();
+//        return tbox;
+//    }
 
     /**
      * 生成报文头，从命令标识到数据单元长度字节
@@ -160,8 +166,9 @@ public class VechileUtils {
 //
 //    }
     public static String getVin() {
-        int incrementAndGet = suffix.incrementAndGet();
-        return prefix + incrementAndGet;
+        String vin = prefix + suffix.intValue();
+        suffix.incrementAndGet();
+        return vin;
     }
 
     /**
@@ -230,10 +237,15 @@ public class VechileUtils {
 //        byte[] bytes =   getPacket(CommandTag.VEHICLE_REGISTER,"LNBSCB3F4JW183979",1L,"898602B4071730066650", "6854194");
 //        System.out.println(ByteUtils.bytesToHexString(bytes));
 
-        Tbox tbox = getTbox();
-        System.out.println(tbox.getVin());
-    }
+//        Tbox tbox = getTbox();
+//        System.out.println(tbox.getVin());
 
+//        byte[] bytes = geRegisterData("LNBSCB3F0JW184854");
+//        System.out.println(ByteUtils.bytesToHexString(bytes));
+
+        byte[] packet = VechileUtils.getPacket(CommandTag.VEHICLE_LOGIN, "LNBSCB3FXYZ101686", 1, null, null);
+        System.out.println(ByteUtils.bytesToHexString(packet));
+    }
 
 
 }
